@@ -1,5 +1,5 @@
-﻿using Domains.Auth.AppUserEntity.Events;
-using Domains.Auth.AppUserEntity.ValueObjects;
+﻿using Domains.Auth.AppUserEntity.ValueObjects;
+using Domains.Auth.Shared.Events;
 using Domains.Auth.Shared.ValueObjects;
 using Shared.Auth.Enums;
 using Shared.Auth.Extensions;
