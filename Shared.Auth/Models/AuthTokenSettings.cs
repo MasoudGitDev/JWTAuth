@@ -1,6 +1,6 @@
 ﻿namespace Shared.Auth.Models;
-public record AuthTokenSettings(
-    string secureKey ,
+public record AuthTokenSettingsModel(
+    string SecretKey ,
     string Issuer ,
     string Audience ,
     double ExpireMinutes = 60);
