@@ -8,15 +8,21 @@ using System.Text;
 
 namespace Apps.Auth.Services;
 
-internal class JwtService(AuthTokenSettings tokenSettings) : IAuthService {
+internal class JwtService(AuthTokenSettingsModel tokenSettings) : IAuthService {
 
+   
     private readonly JwsAlgorithm _algorithm  = JwsAlgorithm.HS256;
-    private readonly byte[] _securityKey = Encoding.UTF8.GetBytes(tokenSettings.secureKey);
+    private readonly byte[] _securityKey = Encoding.UTF8.GetBytes(tokenSettings.SecretKey);
 
+    // ======================= publics methods
+    public static JwtService Create(AuthTokenSettingsModel tokenSetting)
+       => new(tokenSetting);
     public async Task<AccountResult> GenerateTokenAsync(AppUserId appUserId) {
         var claims = GenerateClaims(appUserId);
         return ( new AccountResult(ResultStatus.Succeed , await EncodeAsync(claims) , claims) );
     }
+    public async Task<AccountResult> EvaluateAsync(string token)
+       => new AccountResult(ResultStatus.Succeed , token , await DecodeAsync(token));
 
     private Dictionary<string , string> GenerateClaims(AppUserId appUserId)
         => new() {
@@ -28,8 +34,7 @@ internal class JwtService(AuthTokenSettings tokenSettings) : IAuthService {
             { AuthTokenType.Expire , DateTime.UtcNow.AddMinutes(tokenSettings.ExpireMinutes).ToString() } ,
         };
 
-    public async Task<AccountResult> EvaluateAsync(string token)
-        => new AccountResult(ResultStatus.Succeed , token , await DecodeAsync(token));
+    // ================= private methods
 
     private Task<string> EncodeAsync(Dictionary<string , string> claims)
         => Task.FromResult(( JWT.Encode(claims , _securityKey , _algorithm) )
