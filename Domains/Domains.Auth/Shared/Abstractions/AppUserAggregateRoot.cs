@@ -1,5 +1,4 @@
-﻿using Domains.Auth.Shared.ValueObjects;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Auth.Shared.Abstractions;

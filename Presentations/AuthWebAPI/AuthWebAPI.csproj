@@ -12,12 +12,14 @@
   <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.1-pre01" />
     <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.0-Preview.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Applications\Apps.Auth\Apps.Auth.csproj" />
+    <ProjectReference Include="..\..\Infrastructures\Infra.Auth\Infra.Auth.csproj" />
     <ProjectReference Include="..\..\Shared.Auth\Shared.Auth.csproj" />
   </ItemGroup>
 
