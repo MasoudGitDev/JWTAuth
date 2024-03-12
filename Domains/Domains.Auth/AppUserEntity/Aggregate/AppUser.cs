@@ -1,8 +1,12 @@
 ﻿using Domains.Auth.AppUserEntity.ValueObjects;
 using Domains.Auth.Shared.Abstractions;
 using Shared.Auth.Enums;
+using System.Runtime.CompilerServices;
 
+
+[assembly:InternalsVisibleTo("Apps.Auth")]
 namespace Domains.Auth.AppUserEntity.Aggregate;
+
 internal partial class AppUser : AppUserAggregateRoot {
 
     public bool IsLockedBySystem { get; private set; } = false;

@@ -1,6 +1,5 @@
 ﻿using Domains.Auth.AppUserEntity.ValueObjects;
 using Domains.Auth.Shared.Events;
-using Domains.Auth.Shared.ValueObjects;
 using Shared.Auth.Enums;
 using Shared.Auth.Extensions;
 
@@ -10,7 +9,7 @@ internal partial class AppUser {
     public static AppUser Create(
         Gender gender = Gender.Male ,
         DateTime? birthDate = null) => new() {
-            Id = EntityId.Create() ,
+            Id = Guid.NewGuid() ,
             Gender = gender ,
             BirthDate = CheckDateTime(birthDate)
         };
