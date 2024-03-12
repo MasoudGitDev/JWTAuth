@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="jose-jwt" Version="4.1.0" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Domains\Domains.Auth\Domains.Auth.csproj" />
+    <ProjectReference Include="..\..\Shared.Auth\Shared.Auth.csproj" />
+  </ItemGroup>
+
 </Project>
