@@ -1,5 +1,5 @@
-﻿using Domains.Auth.AppUserEntity.Events;
-using Domains.Auth.Shared.Abstractions;
+﻿using Domains.Auth.Shared.Abstractions;
+using Domains.Auth.Shared.Events;
 using Shared.Auth.Extensions;
 namespace Domains.Auth.AppUserEntity.ValueObjects;
 internal class Address {
@@ -26,18 +26,18 @@ internal class Address {
         Country = country;
         eventAction.Invoke(new ChangeEvent<string>("Address.Country" , oldData , country));
     }
-    public void ChangeCity(string city , Action<IDomainEvent> eventAction) { 
+    public void ChangeCity(string city , Action<IDomainEvent> eventAction) {
         var oldData = City;
         City = city;
         eventAction.Invoke(new ChangeEvent<string>("Address.City" , oldData , city));
     }
-    public void ChangeDescription(string description , Action<IDomainEvent> eventAction) { 
+    public void ChangeDescription(string description , Action<IDomainEvent> eventAction) {
         var oldData = Description;
         Description = description;
         eventAction.Invoke(new ChangeEvent<string>("Address.Description" , oldData , description));
     }
 
-    public static implicit operator Address?(string jsonSource) => jsonSource.FromJsonString<Address>();
+    public static implicit operator Address?(string jsonSource) => jsonSource.FromJsonToType<Address>();
     public static implicit operator string?(Address address) => address.ToJson();
 
 }
