@@ -11,19 +11,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructures", "Infrastr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentations", "Presentations", "{3FAADED5-538A-4E45-AF5E-D50DF2582826}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domains.Auth", "Domains\Domains.Auth\Domains.Auth.csproj", "{B45E74BB-095B-44D8-928E-F4532CD63521}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domains.Auth", "Domains\Domains.Auth\Domains.Auth.csproj", "{B45E74BB-095B-44D8-928E-F4532CD63521}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apps.Auth", "Applications\Apps.Auth\Apps.Auth.csproj", "{169EA72A-A6EB-4C75-A258-2FA99C0D088A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Apps.Auth", "Applications\Apps.Auth\Apps.Auth.csproj", "{169EA72A-A6EB-4C75-A258-2FA99C0D088A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{B551EBA3-ED68-4F9A-9518-EE02ADB9A842}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Auth", "Shared.Auth\Shared.Auth.csproj", "{E5E988F4-5E65-4CE9-818B-B0467D9711EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Auth", "Shared.Auth\Shared.Auth.csproj", "{E5E988F4-5E65-4CE9-818B-B0467D9711EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infra.Auth", "Infrastructures\Infra.Auth\Infra.Auth.csproj", "{CF2A006C-8A56-4478-AAAE-B2B25285D03C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infra.Auth", "Infrastructures\Infra.Auth\Infra.Auth.csproj", "{CF2A006C-8A56-4478-AAAE-B2B25285D03C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthWebAPI", "Presentations\AuthWebAPI\AuthWebAPI.csproj", "{0D9780E2-76AF-413B-BF85-433595722BC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthWebAPI", "Presentations\AuthWebAPI\AuthWebAPI.csproj", "{0D9780E2-76AF-413B-BF85-433595722BC2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_UnitTests", "0_UnitTests", "{0B356568-2F18-4DDE-9650-AA4DA8654EAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTests.Apps.Auth", "UTests.Apps.Auth\UTests.Apps.Auth.csproj", "{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{0D9780E2-76AF-413B-BF85-433595722BC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D9780E2-76AF-413B-BF85-433595722BC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D9780E2-76AF-413B-BF85-433595722BC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{E5E988F4-5E65-4CE9-818B-B0467D9711EB} = {B551EBA3-ED68-4F9A-9518-EE02ADB9A842}
 		{CF2A006C-8A56-4478-AAAE-B2B25285D03C} = {70F8EE83-A668-491B-BDA7-9B962EB848D9}
 		{0D9780E2-76AF-413B-BF85-433595722BC2} = {3FAADED5-538A-4E45-AF5E-D50DF2582826}
+		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE} = {0B356568-2F18-4DDE-9650-AA4DA8654EAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6147FFCE-1A28-40BA-AD31-F7D77134CE8A}
