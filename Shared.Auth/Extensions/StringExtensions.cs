@@ -9,4 +9,10 @@ public static class StringExtensions {
         return (String.Empty, false);
     }
 
+    public static string ThrowIfNullOrWhiteSpace(this string? source , string propertyName) { 
+        if(string.IsNullOrWhiteSpace(source))
+                throw new ArgumentNullException($"The <{propertyName}> can not be <NullOrWhiteSpace>.");
+        return source;
+    }
+
 }
