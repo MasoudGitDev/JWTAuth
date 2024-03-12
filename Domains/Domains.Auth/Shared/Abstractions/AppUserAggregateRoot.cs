@@ -7,7 +7,7 @@ namespace Domains.Auth.Shared.Abstractions;
 internal abstract class AppUserAggregateRoot : IdentityUser<Guid> {
 
     [NotMapped]
-    public EntityId RootId {
+    public Guid RootId {
         get => Id;
         set => Id = value;
     }
