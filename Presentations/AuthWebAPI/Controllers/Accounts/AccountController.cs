@@ -10,7 +10,7 @@ using Shared.Auth.Models;
 
 
 namespace AuthWebAPI.Controllers.Accounts;
-[Authorize]
+
 [Route("api/[controller]")]
 [ApiController]
 [ResultException]
@@ -30,21 +30,19 @@ public class AccountController(IAccountUOW _unitOfWork)
     }
 
     [AllowAnonymous]
-    [HttpPost("SignIn")]
-    public async Task<AccountResult> SignInAsync([FromBody] SignInDto model) {
+    [HttpPost("Login")]
+    public async Task<AccountResult> LoginAsync([FromBody] SignInDto model) {
         var (loginType, loginName, password, isPersistent) = model;
-        return await AccountManager.SignInAsync(loginType , loginName , password , isPersistent , false);
+        return await AccountManager.LoginAsync(loginType , loginName , password , isPersistent , false);
+    }
+
+    [HttpDelete("Delete")]
+    public async Task<IActionResult> DeleteAsync() {
+        await AccountManager.DeleteAsync(await GetUserAsync());
+        return Ok(new {
+            message = "The Account has been deleted successfully"
+        });
     }
 
 
-    [HttpPost("LoginByToken/{token}")]
-    public async Task<IActionResult> LoginByTokenAsync([FromRoute] string token) {
-        return Ok(new { userId = await GetUserAsync() , token });
-    }
-
-    [AllowAnonymous]
-    [HttpGet("DeviceInfo")]
-    public async Task<IActionResult> GetDeviceInfo() {
-        return Ok(new { deviceInfo = "Device Info"  });
-    }
 }

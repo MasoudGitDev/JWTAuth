@@ -11,6 +11,7 @@ using Shared.Auth.ValueObjects;
 
 namespace AuthWebAPI.Controllers;
 
+[Authorize]
 [ResultException]
 public abstract class AuthController(IAccountUOW _unitOfWork) : ControllerBase {
 

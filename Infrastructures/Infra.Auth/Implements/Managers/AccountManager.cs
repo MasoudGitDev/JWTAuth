@@ -25,7 +25,7 @@ internal sealed class AccountManager(
             .ThrowIfNull("Invalid-UserId")
             .Id.ToString());
     }
-    public async Task<AccountResult> SignInAsync(LoginType loginType ,
+    public async Task<AccountResult> LoginAsync(LoginType loginType ,
         string loginName ,
         string password ,
         bool isPersistent ,
@@ -34,7 +34,8 @@ internal sealed class AccountManager(
         var findUser = (loginType switch {
             LoginType.UserName => await _userManager.FindByNameAsync(loginName) ,
             LoginType.Email => await _userManager.FindByEmailAsync(loginName),
-            _ => throw new AccountsException("Invalid-LoginType" , "The <login-type> is invalid.")}) ?? 
+            _ => throw new AccountsException("Invalid-LoginType" , "The <login-type> is invalid.")
+        }) ??
             throw new AccountsException("InvalidData" ,
             $"Please check [ loginType : <{loginType}>, loginName : <{loginName}> , password <***> ] again.");
 
@@ -49,6 +50,11 @@ internal sealed class AccountManager(
         await SendTokenLinkToEmailAsync(createUser.Email! , "Email-Conformation_link" , result.Link);
         return await _authService.GenerateTokenAsync(_claimsGenerator.CreateBlockClaims(createUser.Id ,
             "NotConfirmedEmail"));
+    }
+
+
+    public async Task DeleteAsync(AppUser appUser) {
+        await _userManager.DeleteAsync(appUser);
     }
 
     #region private methods    
