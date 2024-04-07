@@ -1,20 +1,20 @@
 ﻿using Shared.Auth.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace AuthWebAPI.DTOs;
 
-public class SignUpDto {
-    required public string Email { get; set; }
-    required public string UserName { get; set; }
-    required public DateTime BirthDate { get; set; } = DateTime.UtcNow;
-    required public Gender Gender { get; set; } = Gender.Male;
-
-    required public string Password { get; set; }
+public record SignUpDto(
+    [EmailAddress] string Email,    
+    string UserName,
+    string Password ,
+    Gender Gender = Gender.Male ,
+    DateTime? BirthDate = null) {
 
     [Compare(nameof(Password))]
     required public string ConfirmedPassword { get; set; }
 
     public string? Captcha { get; set; }
 
-
+    
 }

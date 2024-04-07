@@ -2,5 +2,6 @@
 
 namespace Domains.Auth.AppUserEntity.Aggregate;
 
-[Table("FemaleAppUsers")]
+[NotMapped]
+//[Table("FemaleAppUsers")]
 internal class FemaleAppUser : AppUser { }

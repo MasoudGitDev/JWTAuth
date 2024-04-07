@@ -1,29 +1,20 @@
+using Apps.Services.Models;
 using Infra.Auth.ServiceConfigs;
 using Microsoft.OpenApi.Models;
+using Shared.Auth.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var emailConfigModel =
+    (builder.Configuration.GetSection("EmailConfigModel").Get<EmailConfigModel>())
+    .ThrowIfNull(nameof(EmailConfigModel));
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton(emailConfigModel);
+builder.Services.Add_InfraAuth_Services();
 
-builder.Services.AddMediatR(opt => {
-    opt.RegisterServicesFromAssemblies(
-        typeof(Domains.Auth.Shared.Abstractions.IDomainEvent).Assembly
-    );
-});
 
-builder.Services.AddAuthentication(opt => {
-    string bearer = "Bearer";
-    opt.DefaultScheme = bearer;
-    opt.DefaultChallengeScheme = bearer;
-    opt.DefaultAuthenticateScheme = bearer;    
-}).AddJwtBearer();
-
-builder.Services.AddSwaggerGen(opt=> {
+builder.Services.AddSwaggerGen(opt => {
     opt.SwaggerDoc("v1" , new OpenApiInfo() { Title = "Jwt Authentication" });
     var openApiSecurityScheme = new OpenApiSecurityScheme(){
         Scheme = "Bearer" ,
@@ -38,29 +29,35 @@ builder.Services.AddSwaggerGen(opt=> {
         }
     };
     opt.AddSecurityRequirement(new OpenApiSecurityRequirement() {
-        
+
         {openApiSecurityScheme , Array.Empty<string>() }
     });
     opt.AddSecurityDefinition("Bearer" , openApiSecurityScheme);
 
 });
 
-builder.Services.Add_InfraAuth_Services();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+
+
 
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if(app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 app.MapControllers();
+
 
 app.Run();

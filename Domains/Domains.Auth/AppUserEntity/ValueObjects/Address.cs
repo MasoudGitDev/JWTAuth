@@ -2,7 +2,7 @@
 using Domains.Auth.Shared.Events;
 using Shared.Auth.Extensions;
 namespace Domains.Auth.AppUserEntity.ValueObjects;
-internal class Address {
+public class Address {
     public string Country { get; private set; } = "Iran";
     public string City { get; private set; } = "Shiraz";
     public string Description { get; private set; } = "<undefined>";

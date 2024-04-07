@@ -9,6 +9,9 @@ internal class ChangeEvent<T>(string propertyName, T from, T to) : IDomainEvent
 
     public string? Description
         => $"The <{propertyName}> is changed [from : <{from}>] => [to : <{to}>].";
+
+    public static ChangeEvent<T> Set(string propertyName, T from, T to)
+        => new ChangeEvent<T>(propertyName, from, to);
 }
 
 

@@ -13,15 +13,15 @@ internal class AppWriteDbContext : IdentityDbContext<AppUser , AppRole , Guid> {
 
     protected override void OnModelCreating(ModelBuilder builder) {
 
-        builder.Ignore<IdentityUser>();
-
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly() , ContextType);
-
         base.OnModelCreating(builder);
+
+
+
     }
 
-    public DbSet<MaleAppUser> MaleAppUsers { get; set; }
-    public DbSet<FemaleAppUser> FemaleAppUsers { get; set; }
+    //public DbSet<MaleAppUser> MaleAppUsers { get; set; }
+    //public DbSet<FemaleAppUser> FemaleAppUsers { get; set; }
 
 
     private static bool ContextType(Type type)

@@ -10,30 +10,37 @@ namespace Apps.Auth.Services;
 
 internal class JwtService(AuthTokenSettingsModel tokenSettings) : IAuthService {
 
-   
+
     private readonly JwsAlgorithm _algorithm  = JwsAlgorithm.HS256;
     private readonly byte[] _securityKey = Encoding.UTF8.GetBytes(tokenSettings.SecretKey);
 
     // ======================= publics methods
     public static JwtService Create(AuthTokenSettingsModel tokenSetting)
        => new(tokenSetting);
-    public async Task<AccountResult> GenerateTokenAsync(AppUserId appUserId) {
-        var claims = GenerateClaims(appUserId);
-        return ( new AccountResult(ResultStatus.Succeed , await EncodeAsync(claims) , claims) );
+
+    public async Task<AccountResult> GenerateTokenAsync(Dictionary<string,string> claims) {
+        return ( new AccountResult(await EncodeAsync(claims) , claims) );
     }
-    public async Task<AccountResult> EvaluateAsync(string token)
-       => new AccountResult(ResultStatus.Succeed , token , await DecodeAsync(token));
+   
+    public async Task<AccountResult> EvaluateAsync(string token , Func<string , Task<AppUserId>> userFinder) {
+        var claims = await DecodeAsync(token);
+        TokenValidator.Validate(claims);
 
-    private Dictionary<string , string> GenerateClaims(AppUserId appUserId)
-        => new() {
-            { AuthTokenType.Id , Guid.NewGuid().ToString() },
-            { AuthTokenType.UserId , appUserId } ,
-            { AuthTokenType.IssuerAt , DateTime.UtcNow.ToString() } ,
-            { AuthTokenType.Issuer , tokenSettings.Issuer } ,
-            { AuthTokenType.Audience , tokenSettings.Audience } ,
-            { AuthTokenType.Expire , DateTime.UtcNow.AddMinutes(tokenSettings.ExpireMinutes).ToString() } ,
-        };
+        string userId = (claims[AuthTokenType.UserId])
+            .ThrowIfNullOrWhiteSpace(nameof(userId));
 
+        AppUserId findRealUserId = (await userFinder.Invoke(userId))
+            .ThrowIfNull(("AppUserId"));
+
+        return await GenerateTokenAsync(claims); // must be check later
+    }
+
+    public async Task<AccountResult> RefreshAsync(string token , Func<string , Task<AppUserId>> userFinder) {
+        var result = await EvaluateAsync(token,userFinder);
+        var userId = (result.KeyValueClaims[AuthTokenType.UserId])
+            .ThrowIfNullOrWhiteSpace("UserId");
+        return await GenerateTokenAsync(result.KeyValueClaims);
+    }
     // ================= private methods
 
     private Task<string> EncodeAsync(Dictionary<string , string> claims)
@@ -41,10 +48,11 @@ internal class JwtService(AuthTokenSettingsModel tokenSettings) : IAuthService {
             .ThrowIfNullOrWhiteSpace("System can not generate an <auth-token>."));
 
     private Task<Dictionary<string , string>> DecodeAsync(string token) {
-        return Task.FromResult(( JWT.Decode(token , _securityKey , _algorithm) )
+        var claims = ( JWT.Decode(token , _securityKey , _algorithm) )
             .ThrowIfNullOrWhiteSpace("<Auth-Token>")
             .FromJsonToType<Dictionary<string , string>>()
-            .ThrowIfNull("<claims>")
-            .ThrowIfEmpty("<claims>"));
+            .ThrowIfNull("<claims>");
+        TokenValidator.Validate(claims);
+        return Task.FromResult(claims);
     }
 }

@@ -21,8 +21,10 @@ public static class JsonExtensions {
     }
 
     public static T? FromJsonToType<T>(this string? source) {
-        return source is null ?
-            default : JsonSerializer.Deserialize<T>(source , JsonSerializerOptions);
+        if(source is null) {
+            return default;
+        }
+        return JsonSerializer.Deserialize<T>(source , JsonSerializerOptions);
     }
 
 }

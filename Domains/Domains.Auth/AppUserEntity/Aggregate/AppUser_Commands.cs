@@ -2,28 +2,38 @@
 using Domains.Auth.Shared.Events;
 using Shared.Auth.Enums;
 using Shared.Auth.Extensions;
+using Shared.Auth.ValueObjects;
 
 namespace Domains.Auth.AppUserEntity.Aggregate;
-internal partial class AppUser {
+public partial class AppUser {
 
     public static AppUser Create(
+        string userName ,
+        string email ,
+        Gender gender = Gender.Male ,
+        DateTime? birthDate = null) {
+        DateTime currentDT = DateTime.UtcNow;
+        return new() {
+            Id = Guid.NewGuid() ,
+            Gender = gender ,
+            BirthDate = CheckDateTime(birthDate) ,
+            UserName = userName ,
+            Email = email ,
+            SystemLock = LockInfo.Create(startAt :currentDT) ,
+            CreatedAt = currentDT ,
+            OwnerLock = null,
+            LoginInfo = new()
+        };
+    }
+
+    public static AppUser Create(
+        AppUserId appUserId ,
         Gender gender = Gender.Male ,
         DateTime? birthDate = null) => new() {
-            Id = Guid.NewGuid() ,
+            Id = appUserId ,
             Gender = gender ,
             BirthDate = CheckDateTime(birthDate)
         };
-
-    public void SetSystemLock(bool isLockedBySystem) {
-        var oldData = IsLockedBySystem;
-        IsLockedBySystem = isLockedBySystem;
-        RaiseEvent(new ChangeEvent<bool>(nameof(IsLockedBySystem) , oldData , isLockedBySystem));
-    }
-    public void SetOwnerLock(bool isLockedByOwner) {
-        var oldData = IsLockedByOwner;
-        IsLockedByOwner = isLockedByOwner;
-        RaiseEvent(new ChangeEvent<bool>(nameof(IsLockedByOwner) , oldData , isLockedByOwner));
-    }
 
     public void Update(DateTime birthDate) {
         var oldData = BirthDate;
@@ -36,6 +46,17 @@ internal partial class AppUser {
         RaiseEvent(new ChangeEvent<Gender>(nameof(Gender) , oldData , gender));
     }
 
+
+    private static DateTime CheckDateTime(DateTime? dateTime) {
+        if(dateTime is null) {
+            return DateTime.UtcNow;
+        }
+        return (DateTime) dateTime;
+    }
+}
+
+// For Address
+public partial class AppUser {
     public void CreateAddress(Address address) {
         var oldData = Address;
         Address.Create(address);
@@ -51,12 +72,19 @@ internal partial class AppUser {
     public void ChangeAddressDescription(string description) {
         Address.ThrowIfNull(nameof(Address)).ChangeDescription(description , RaiseEvent);
     }
+}
 
+//SystemLock
+public partial class AppUser {
+    public void SetSystemLock(LockInfo? lockInfo) {
+        var oldData = SystemLock;
+        SystemLock = lockInfo;
+        RaiseEvent(ChangeEvent<LockInfo?>.Set(nameof(SystemLock) , oldData , lockInfo));
+    }
 
-    private static DateTime CheckDateTime(DateTime? dateTime) {
-        if(dateTime is null) {
-            return DateTime.UtcNow;
-        }
-        return (DateTime) dateTime;
+    public void SetOwnerLock(LockInfo lockInfo) {
+        var oldData = OwnerLock;
+        OwnerLock = lockInfo;
+        RaiseEvent(ChangeEvent<LockInfo?>.Set(nameof(OwnerLock) , oldData , lockInfo));
     }
 }

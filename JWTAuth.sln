@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthWebAPI", "Presentations
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0_UnitTests", "0_UnitTests", "{0B356568-2F18-4DDE-9650-AA4DA8654EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UTests.Apps.Auth", "UTests.Apps.Auth\UTests.Apps.Auth.csproj", "{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UTests.Apps.Auth", "UTests.Apps.Auth\UTests.Apps.Auth.csproj", "{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apps.Services", "Applications\Apps.Services\Apps.Services.csproj", "{8FF603BB-192E-4AEC-B293-16FB08982726}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FF603BB-192E-4AEC-B293-16FB08982726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF603BB-192E-4AEC-B293-16FB08982726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF603BB-192E-4AEC-B293-16FB08982726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF603BB-192E-4AEC-B293-16FB08982726}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{CF2A006C-8A56-4478-AAAE-B2B25285D03C} = {70F8EE83-A668-491B-BDA7-9B962EB848D9}
 		{0D9780E2-76AF-413B-BF85-433595722BC2} = {3FAADED5-538A-4E45-AF5E-D50DF2582826}
 		{1E0C7DBB-2F9A-4884-89CE-BEA87A685BCE} = {0B356568-2F18-4DDE-9650-AA4DA8654EAF}
+		{8FF603BB-192E-4AEC-B293-16FB08982726} = {C8596778-7992-4008-88C8-6CC618DE90E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6147FFCE-1A28-40BA-AD31-F7D77134CE8A}

@@ -1,17 +1,17 @@
 ﻿using Domains.Auth.AppUserEntity.ValueObjects;
 using Domains.Auth.Shared.Abstractions;
+using Shared.Auth.Abstractions;
 using Shared.Auth.Enums;
 
 
 
 namespace Domains.Auth.AppUserEntity.Aggregate;
+public partial class AppUser : AppUserAggregateRoot , IEntity , IRequestResult {
 
-internal partial class AppUser : AppUserAggregateRoot {
+    public LockInfo? SystemLock { get; private set; }
+    public LockInfo? OwnerLock { get; private set; } = null;
 
-    public bool IsLockedBySystem { get; private set; } = false;
-    public bool IsLockedByOwner { get; private set; } = false;
-
-    public DateTime CreatedAt { get; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; private set; }
     public DateTime BirthDate { get; private set; }
     public Gender Gender { get; private set; }
 

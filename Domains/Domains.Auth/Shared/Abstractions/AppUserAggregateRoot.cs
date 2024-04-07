@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domains.Auth.Shared.Abstractions;
 
-internal abstract class AppUserAggregateRoot : IdentityUser<Guid> {
+public abstract class AppUserAggregateRoot : IdentityUser<Guid> {
 
     [NotMapped]
     public Guid RootId {

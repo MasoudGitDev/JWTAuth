@@ -6,13 +6,11 @@ using Shared.Auth.Extensions;
 
 namespace Infra.Auth.Configs.Write;
 internal class AppUsers_Write_Configs :
-    IEntityTypeConfiguration<MaleAppUser> ,
-    IEntityTypeConfiguration<FemaleAppUser> {
-
-    
-    public void Configure(EntityTypeBuilder<MaleAppUser> builder) {
+    IEntityTypeConfiguration<AppUser> {
+    public void Configure(EntityTypeBuilder<AppUser> builder) {
         builder.HasIndex(x => x.Id).IsUnique();
         builder.Property(p => p.Id).IsRequired();
+        builder.Property(p => p.Email).IsRequired();
 
         builder.Property(p => p.Address)
             .IsRequired(false)
@@ -22,18 +20,10 @@ internal class AppUsers_Write_Configs :
            .IsRequired()
            .HasConversion(x => x.ToJson() , y => y.FromJsonToType<LoginInfo>().ThrowIfNull(nameof(LoginInfo)));
 
-    }
+        builder.Property(x => x.SystemLock)
+            .HasConversion(x => x.ToJson() , y => y.FromJsonToType<LockInfo?>());
 
-    public void Configure(EntityTypeBuilder<FemaleAppUser> builder) {
-        builder.HasIndex(x => x.Id).IsUnique();
-        builder.Property(p => p.Id).IsRequired();
-
-        builder.Property(p => p.Address)
-            .IsRequired(false)
-            .HasConversion(x => x.ToJson() , y => y.FromJsonToType<Address>());
-
-        builder.Property(p => p.LoginInfo)
-           .IsRequired()
-           .HasConversion(x => x.ToJson() , y => y.FromJsonToType<LoginInfo>().ThrowIfNull(nameof(LoginInfo)));
+        builder.Property(x => x.OwnerLock)
+            .HasConversion(x => x.ToJson() , y => y.FromJsonToType<LockInfo?>());
     }
 }
