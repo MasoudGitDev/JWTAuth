@@ -1,13 +1,15 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Shared.Auth.Extensions;
 public static class JsonExtensions {
 
     public static JsonSerializerOptions JsonSerializerOptions 
-        => new JsonSerializerOptions() {
+        => new() {
             AllowTrailingCommas = true,
             PropertyNameCaseInsensitive = false ,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase ,
+            UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip
         };
 
     public static string ToJson<T>(this T? source) { 
@@ -27,4 +29,8 @@ public static class JsonExtensions {
         return JsonSerializer.Deserialize<T>(source , JsonSerializerOptions);
     }
 
+    public static StringContent AsStringContent<T>(this T data)
+        => new(data.ToJson() , System.Text.Encoding.UTF8 , "application/json");
+
+    
 }

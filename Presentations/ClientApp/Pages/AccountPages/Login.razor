@@ -1,0 +1,62 @@
+﻿@page "/Accounts/Login"
+
+@inject AuthenticationStateProvider _authState
+@inject NavigationManager _navManager
+@inject IAccountService _accountManager
+
+
+<h3>Login</h3>
+
+<div class="row">
+    <div class="cols-2"></div>
+    <div class="col-8">
+
+        <EditForm Enhance Model="_model" OnValidSubmit="SubmitFormAsync">
+
+            <div class="form-group mb-1">
+                <label class="form-label">Type</label>
+                <input class="form-control" @bind="_model.LoginName" type="text" />
+            </div>
+
+            <div class="form-group mb-1">
+                <label class="form-label">Password</label>
+                <input class="form-check" @bind="_model.Password" type="text" />
+            </div>
+
+            <div>
+                <button class="btn btn-primary">Login</button>
+                <button class="btn btn-secondary" @onclick="@GotToForgotPasswordPage" >Forgot Password</button>
+                <button class="btn btn-secondary" @onclick="@GotToSignUpPage">SignUp</button>
+            </div>
+        </EditForm>
+
+    </div>
+    <div class="cols-2"></div>
+</div>
+
+@code {
+    private LoginDto _model = new();
+
+    private async Task SubmitFormAsync() {
+        var accountResult = await _accountManager.LoginAsync(_model);
+        var authState = (AuthStateProvider)_authState;
+        await authState.SetStateAsync(accountResult);
+
+        if(accountResult.Status == ResultStatus.Failed) {           
+            foreach(var item in accountResult.Messages) {
+                Console.WriteLine(item);                
+                if(item.Code == "NotConfirmedEmail") {
+                    _navManager.NavigateTo("Accounts/ResendEmailConformationLink" ,forceLoad:true);
+                }
+            }
+        }
+        else {
+            _navManager.NavigateTo("Dashboard" , forceLoad: true);
+        }
+
+
+    }
+
+    private void GotToForgotPasswordPage() => _navManager.NavigateTo("/Accounts/ForgotPassword");
+    private void GotToSignUpPage() => _navManager.NavigateTo("/Accounts/SignUp");
+}

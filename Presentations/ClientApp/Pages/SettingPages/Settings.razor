@@ -1,0 +1,32 @@
+﻿@page "/Settings"
+
+@inject NavigationManager _navManager
+
+<h3>Settings</h3>
+
+<div>
+ <AuthorizeView Context="authContext">
+     <Authorized>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <div class="">
+                    <input disabled class="form-label" value="*************" />
+                    <button class="btn btn-outline-danger" @onclick="@GotToChangePasswordPage">Change</button>
+                </div>
+            </div>           
+            <div class="form-group">
+                <label class="form-label">Change Info</label>
+                <div class="">
+                    <input disabled class="form-label" value="@(authContext.User.Identity?.Name ?? "<not-found>")" />
+                    <button class="btn btn-outline-danger" @onclick="@GoToChangeInfoPage">Change</button>
+                </div>
+            </div>
+     </Authorized>
+ </AuthorizeView>
+</div>
+
+
+@code {
+    private void GotToChangePasswordPage() => _navManager.NavigateTo("/Settings/ChangePassword");
+    private void GoToChangeInfoPage() => _navManager.NavigateTo("/Settings/ChangeInfo");
+}

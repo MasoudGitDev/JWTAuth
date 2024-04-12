@@ -29,27 +29,31 @@ internal sealed class AccountManager(
         string loginName ,
         string password ,
         bool isPersistent ,
-        bool lockoutOnFailure = true) {
-
+        bool lockoutOnFailure = true) {  
         var findUser = (loginType switch {
             LoginType.UserName => await _userManager.FindByNameAsync(loginName) ,
             LoginType.Email => await _userManager.FindByEmailAsync(loginName),
-            _ => throw new AccountsException("Invalid-LoginType" , "The <login-type> is invalid.")
+            _ => throw new AccountException("Invalid-LoginType" , "The <login-type> is invalid.")
         }) ??
-            throw new AccountsException("InvalidData" ,
+            throw new AccountException("InvalidData" ,
             $"Please check [ loginType : <{loginType}>, loginName : <{loginName}> , password <***> ] again.");
 
         var result = await _signInManager.PasswordSignInAsync(findUser , password , isPersistent , lockoutOnFailure);
-        await HandleSignInResultAsync(result , findUser , password);
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(findUser.Id));
+        var isEmailConfirmed = await HandleSignInResultAsync(result , findUser , password);
+        return isEmailConfirmed
+            ? await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(findUser.Id , findUser.UserName!))
+            : await _authService.GenerateTokenAsync(
+                _claimsGenerator.CreateBlockClaims(findUser.Id ,"NotConfirmedEmail" , findUser.UserName!) ,
+                errors: [new CodeMessage("NotConfirmedEmail" , "Please Confirm your email.")]);
     }
 
     public async Task<AccountResult> RegisterAsync(AppUser appUserModel , string password , LinkModel model) {
         AppUser createUser = await CreateUserAsync(appUserModel , password);
         var result = await CreateTokenLinkAsync(createUser, model , _userManager.GenerateEmailConfirmationTokenAsync );
         await SendTokenLinkToEmailAsync(createUser.Email! , "Email-Conformation_link" , result.Link);
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateBlockClaims(createUser.Id ,
-            "NotConfirmedEmail"));
+        return await _authService.GenerateTokenAsync(
+            _claimsGenerator.CreateBlockClaims(createUser.Id ,"NotConfirmedEmail" , appUserModel.UserName!) ,
+            errors : [new CodeMessage("NotConfirmedEmail" , "Please Confirm your email.")]);
     }
 
 
@@ -62,18 +66,18 @@ internal sealed class AccountManager(
     private async Task<AppUser> CreateUserAsync(AppUser appUser , string password) {
         var result = await  _userManager.CreateAsync(appUser);
         if(!result.Succeeded) {
-            throw new AccountsException(GetIdentityErrors(result.Errors));
+            throw new AccountException(GetIdentityErrors(result.Errors));
         }
         result = await _userManager.AddPasswordAsync(appUser , password);
         if(!result.Succeeded) {
-            throw new AccountsException(GetIdentityErrors(result.Errors));
+            throw new AccountException(GetIdentityErrors(result.Errors));
         }
         return appUser;
     }
 
-    private static Dictionary<string , string> GetIdentityErrors(IEnumerable<IdentityError> identityError) {
-        Dictionary<string,string> errors=[];
-        Parallel.ForEach(identityError , (model) => { errors.Add(model.Code , model.Description); });
+    private static List<CodeMessage> GetIdentityErrors(IEnumerable<IdentityError> identityError) {
+        List<CodeMessage> errors=[];
+        Parallel.ForEach(identityError , (model) => { errors.Add(new(model.Code , model.Description)); });
         return errors;
     }
 

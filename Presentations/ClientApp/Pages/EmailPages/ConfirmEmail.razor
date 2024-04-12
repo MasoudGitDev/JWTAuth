@@ -1,0 +1,60 @@
+﻿@page "/Accounts/ConfirmEmail/{email}/{token}"
+
+@inject IEmailService _emailService
+@inject NavigationManager _navManager
+@inject AuthenticationStateProvider _authStateProvider
+
+
+<div class="row">
+ <AuthorizeView Context="authContext">
+     <Authorized>
+         <p>Hi @authContext.User.Identity.Name</p>
+            <div class="col-12">
+                <EditForm Enhance Model="model" OnValidSubmit="OnConfirmEmailAsync">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" @bind="@model.Email" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Token</label>
+                        <textarea class="form-control" @bind="model.Token"></textarea>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary">Confirm</button>
+                    </div>
+                </EditForm>
+            </div>
+     </Authorized>
+ </AuthorizeView>
+</div>
+
+
+@code {
+
+
+    [Parameter]
+    public string Email { get; set; } 
+
+    [Parameter]
+    public string Token { get; set; } 
+
+    private EmailConfirmationDto model = new();
+
+    protected override void OnInitialized() {
+        model.Token = Token;
+        model.Email = Email;
+        // await OnConfirmEmailAsync();
+    }
+
+    private async Task OnConfirmEmailAsync() {
+        try {
+            var accountResult = await _emailService.ConfirmAsync(model);
+            var authState = (AuthStateProvider)_authStateProvider;
+            await authState.SetStateAsync(accountResult);
+            _navManager.NavigateTo("Dashboard");
+        }
+        catch(Exception ex) {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

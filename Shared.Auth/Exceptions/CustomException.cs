@@ -1,9 +1,11 @@
-﻿namespace Shared.Auth.Exceptions;
+﻿using Shared.Auth.Models;
+
+namespace Shared.Auth.Exceptions;
 public abstract class CustomException :Exception {
 
     public string Code { get; private set; } = "<not-defined>";
     public string Description { get; private set; } = "<not-defined>";
-    public Dictionary<string , string> Errors { get; private set; } = [];
+    public List<CodeMessage> Errors { get; private set; } = [];
 
     public CustomException() : base() { }
 
@@ -11,16 +13,16 @@ public abstract class CustomException :Exception {
     {
         Code = code; 
         Description = description;
-        Errors.Add(code, description);
+        Errors.Add(new(code, description));
     }
 
-    protected CustomException(Dictionary<string , string> errors)
+    protected CustomException(List<CodeMessage> errors)
     {
         Errors = errors;
     }
     public CustomException(string description) : base(description) {
         Description = description;
-        Errors.Add (Code, description);
+        Errors.Add (new(Code, description));
     }
 
     public void Update(string code) {

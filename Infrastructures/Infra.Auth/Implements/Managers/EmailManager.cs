@@ -20,7 +20,7 @@ internal sealed class EmailManager(
     public async Task<AccountResult> ChangeEmailAsync(AppUser appUser , string newEmail , string token) {
         var result = await _userManager.ChangeEmailAsync(appUser, newEmail, token);
         if(!result.Succeeded) {
-            throw new AccountsException("InvalidToken" ,
+            throw new AccountException("InvalidToken" ,
                 "Due to invalid token , the new email has been not confirmed.");
         }
         return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
@@ -31,14 +31,13 @@ internal sealed class EmailManager(
         var token = await _userManager.GenerateChangeEmailTokenAsync(appUser, newEmail);
         string link = CorrectLink(appUser.Id.ToString(), token, model);
         await SendTokenLinkToEmailAsync(appUser.Email! , "Change-Email" , link);
-        return await _authService.GenerateTokenAsync(_claimsGenerator.GetSignUpClaims(appUser.Id));
+        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id)); // check later
     }
 
     public async Task<AccountResult> ConfirmEmailAsync(AppUser appUser , string confirmationToken) {
         var result = await _userManager.ConfirmEmailAsync(appUser, confirmationToken);
-        Console.WriteLine("activationLink : \n" + confirmationToken);
         if(!result.Succeeded) {
-            throw new AccountsException("InvalidToken" , "The <email-confirmation-token> is invalid.");
+            throw new AccountException("InvalidToken" , "The <email-confirmation-token> is invalid.");
         }
         return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
@@ -52,11 +51,12 @@ internal sealed class EmailManager(
     private async Task<AccountResult> PrepareEmailConformationLinkAsync(AppUser appUser , LinkModel model) {
 
         if(appUser.EmailConfirmed) {
-            throw new AccountsException("EmailConformationToken" , "Your email has been confirmed before.");
+            throw new AccountException("EmailConformationToken" , "Your email has been confirmed before.");
         }
         var result = await CreateTokenLinkAsync(appUser, model , _userManager.GenerateEmailConfirmationTokenAsync );
+        Console.WriteLine(new { emailConformationLink = result.Link });
         await SendTokenLinkToEmailAsync(appUser.Email! , "Email-Conformation_link" , result.Link);
-        return await _authService.GenerateTokenAsync(_claimsGenerator.GetSignUpClaims(appUser.Id));
+        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 
 

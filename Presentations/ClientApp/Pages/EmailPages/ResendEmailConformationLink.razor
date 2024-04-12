@@ -1,0 +1,27 @@
+﻿@page "/Accounts/ResendEmailConformationLink"
+
+@inject IEmailService _emailService
+@inject NavigationManager _navManager
+@inject AuthenticationStateProvider _authStateProvider
+
+<h3>ResendEmailConformationLink</h3>
+<AuthorizeView Context="authContext">
+  <Authorized>
+        <div>Hi @(authContext.User.Identity?.Name ?? "<empty>")</div>
+        <div class="row">          
+            <div class="col-6">
+                <EditForm Enhance Model="_emptyModel" OnValidSubmit="OnResendCode">
+                    <button class="btn btn-primary">Resend</button>
+                </EditForm>
+            </div>
+        </div>
+  </Authorized>
+</AuthorizeView>
+
+@code {
+
+    private object _emptyModel = new(); 
+    private async Task OnResendCode() {
+        var accountResult = await _emailService.ResendCodeAsync();
+    }
+}

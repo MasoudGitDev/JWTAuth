@@ -3,7 +3,6 @@
 namespace Apps.Auth.Services;
 
 public interface IClaimsGenerator {
-    Dictionary<string , string> GetSignUpClaims(AppUserId appUserId);
-    Dictionary<string , string> CreateRegularClaims(AppUserId appUserId);
-    Dictionary<string , string> CreateBlockClaims(AppUserId appUserId , string reason);
+    Dictionary<string , string> CreateRegularClaims(AppUserId appUserId,string displayName = "");
+    Dictionary<string , string> CreateBlockClaims(AppUserId appUserId , string reason, string displayName = "");
 }

@@ -12,7 +12,7 @@ using Shared.Auth.ValueObjects;
 namespace AuthWebAPI.Controllers;
 
 [Authorize]
-[ResultException]
+[AccountResultException]
 public abstract class AuthController(IAccountUOW _unitOfWork) : ControllerBase {
 
     protected async Task<AppUser> GetExistingUserByEmail(string email)
@@ -55,13 +55,13 @@ public abstract class AuthController(IAccountUOW _unitOfWork) : ControllerBase {
         }
         return ( await FindByUserNameAsync(User.Identity.Name ?? string.Empty) ).ThrowIfNull("UserName");
     }
-
-    protected LinkModel CreateLink(string actionName , string routeId) {
-        (string routeIdPlaceholder, string tokenPlaceholder) = ("{" + routeId + "}", "{token}");
-        string link =
-            "https://localhost:7224" +
-            $"/api/Accounts/{actionName}/" + "{"+routeId+"}/" + tokenPlaceholder;
-
-        return new LinkModel(link , routeIdPlaceholder , tokenPlaceholder);
+    /// <summary>
+    ///  Creates a link base base on client (blazor app) url.
+    /// </summary>
+    protected LinkModel CreateLink(
+        string mainUrl = "https://localhost:7255" ,
+        string controllerName = "Accounts",
+        string actionName = "ConfirmEmail") {
+        return new LinkModel($"{mainUrl}/{controllerName}/{actionName}/" + "{email}/{token}" , "{email}" , "{token}");
     }
 }

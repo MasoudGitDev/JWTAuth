@@ -1,0 +1,70 @@
+﻿@page "/Dashboard"
+
+@inject AuthenticationStateProvider _authStateProvider
+@inject IAccountService _accountService
+@inject IEmailService _emailService
+
+@inject NavigationManager _navManager
+
+<h3>Dashboard</h3>
+
+<AuthorizeView Context="authContext">
+    <Authorizing>
+        <p>Authorizing ...</p>
+    </Authorizing>
+    <Authorized>
+        <p>Hi @authContext.User.Identity?.Name</p>
+
+        <EditForm Model="_emptyModel" OnValidSubmit="DeleteAccountAsync">
+            <div>
+                <button class="btn btn-outline-primary">Delete Account</button>
+            </div>
+        </EditForm>
+ 
+        <EditForm Model="_emptyModel" OnValidSubmit="ChangeEmailAsync">
+            <div>
+                <button class="btn btn-outline-primary">Change Email</button>
+            </div>
+        </EditForm>
+
+
+        <EditForm Model="_emptyModel" OnValidSubmit="ChangePasswordAsync">
+            <div>
+                <button class="btn btn-outline-primary">Change Password</button>
+            </div>
+        </EditForm> 
+
+    </Authorized>
+    <NotAuthorized>
+        <p>You not authorized.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private EmptyModel _emptyModel = new();
+
+    private AuthStateProvider? _authState = null;
+
+    protected override void OnInitialized() {
+        _authState = (AuthStateProvider) _authStateProvider;
+    }
+
+    private async Task DeleteAccountAsync() {
+        var result = await _accountService.DeleteAsync();
+        await SetStateAsync();
+    }
+
+    private async Task ChangeEmailAsync() {
+    }
+
+    private async Task ChangePasswordAsync() {
+
+    }
+
+    private async Task SetStateAsync(AccountResultDto? resultDto = null , string navigateTo = "/") {
+        var authState = (AuthStateProvider)_authStateProvider;
+        await authState.SetStateAsync(resultDto);
+        _navManager.NavigateTo(navigateTo);
+    }
+
+}

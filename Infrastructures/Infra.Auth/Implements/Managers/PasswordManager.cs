@@ -20,9 +20,9 @@ internal class PasswordManager(
     ) :SharedManager(_messageSender,_signInManager) , IPasswordManager
 {
 
-    private UserManager<AppUser> _userManager => _signInManager.UserManager;
+    private UserManager<AppUser> UserManager => _signInManager.UserManager;
 
-    public async Task<AccountResult> ChangePasswordAsync(AppUser appUser, string currentPassword, string newPassword)
+    public async Task<AccountResult> ChangeAsync(AppUser appUser, string currentPassword, string newPassword)
     {
 
         var signInResult = await _signInManager.CheckPasswordSignInAsync(appUser, currentPassword, false);
@@ -31,31 +31,30 @@ internal class PasswordManager(
             await HandleSignInResultAsync(signInResult , appUser , currentPassword);
         }
 
-        var result = await _userManager.ChangePasswordAsync(appUser, currentPassword, newPassword);
+        var result = await UserManager.ChangePasswordAsync(appUser, currentPassword, newPassword);
         if (!result.Succeeded)
         {
-            throw new AccountsException("ChangePasswordError", string.Join(',', result.Errors));
+            throw new AccountException("ChangePasswordError", string.Join(',', result.Errors));
         }
         return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 
-    public async Task ForgotPasswordAsync(AppUser appUser, LinkModel model)
+    public async Task ForgotAsync(AppUser appUser, LinkModel model)
     {
-        if (appUser.EmailConfirmed is false)
-        {
-            throw new AccountsException("EmailConfirmedError", "At first , your email must be confirm.");
-        }
-        var linkModel = await CreateTokenLinkAsync(appUser, model, _userManager.GeneratePasswordResetTokenAsync);
-        Console.WriteLine("ResetPasswordToken:\n" + linkModel.Token);
+        var linkModel = await CreateTokenLinkAsync(appUser,
+            model,
+            UserManager.GeneratePasswordResetTokenAsync,
+            appUser.Email ?? "<invalid-routeId>");
+        Console.WriteLine("ResetPasswordLink:\n" + linkModel.Link);
         await SendTokenLinkToEmailAsync(appUser.Email!, "PasswordResetToken", linkModel.Link);
     }
 
-    public async Task<AccountResult> ResetPasswordAsync(AppUser appUser, string token, string newPassword)
+    public async Task<AccountResult> ResetAsync(AppUser appUser, string token, string newPassword)
     {        
-        var result = await _userManager.ResetPasswordAsync(appUser, token, newPassword);
+        var result = await UserManager.ResetPasswordAsync(appUser, token, newPassword);
         if (result.Succeeded is false)
         {
-            throw new AccountsException("ResetPassword", string.Join(",", result.Errors));
+            throw new AccountException("ResetPassword", string.Join(",", result.Errors));
         }
         if(appUser.PhoneNumberConfirmed) {
             // send a second conformation by sms

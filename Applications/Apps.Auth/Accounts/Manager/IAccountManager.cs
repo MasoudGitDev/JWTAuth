@@ -1,5 +1,4 @@
 ﻿using Domains.Auth.AppUserEntity.Aggregate;
-using Microsoft.AspNetCore.Mvc;
 using Shared.Auth.Enums;
 using Shared.Auth.Models;
 
@@ -8,8 +7,8 @@ public interface IAccountManager {
     Task<AccountResult> LoginByTokenAsync(string authToken);
 
     Task<AccountResult> LoginAsync(
-        LoginType loginType ,string loginName , string password, bool isPersistent , bool lockoutOnFailure);
-  
+        LoginType loginType , string loginName , string password , bool isPersistent , bool lockoutOnFailure);
+
     Task<AccountResult> RegisterAsync(AppUser appUserModel , string password , LinkModel model);
-    Task DeleteAsync(AppUser appUser);    
+    Task DeleteAsync(AppUser appUser);
 }

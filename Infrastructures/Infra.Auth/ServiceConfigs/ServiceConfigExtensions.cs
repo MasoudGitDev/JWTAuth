@@ -34,7 +34,7 @@ public static class ServiceConfigExtensions {
             model.secretKey , model.issuer , model.audience , model.expire));
 
         services.AddAppsServices();
-        services.AddScoped<IAuthService , DefaultJwtService>();
+        services.AddScoped<IAuthService , JwtService>();
         services.AddScoped<IAppUserQueries , AppUserQueries>();
         services.AddScoped<IPasswordManager , PasswordManager>();
         services.AddScoped<IEmailManager , EmailManager>();

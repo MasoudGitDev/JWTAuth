@@ -1,5 +1,6 @@
 using Apps.Services.Models;
 using Infra.Auth.ServiceConfigs;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Shared.Auth.Extensions;
 
@@ -44,12 +45,22 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 var app = builder.Build();
+
+
 // Configure the HTTP request pipeline.
 if(app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors(opt => {
+    //opt.WithOrigins(
+    //    "https://localhost:7224",
+    //    "https://localhost:7255" , 
+    //    "http://localhost:5038")
+    opt.AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+});
 
 app.UseHttpsRedirection();
 
