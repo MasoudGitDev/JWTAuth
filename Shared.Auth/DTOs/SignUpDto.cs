@@ -1,19 +1,20 @@
 ﻿using Shared.Auth.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shared.Auth.DTOs;
 
 public record SignUpDto {
 
-    //[EmailAddress]
     public string Email { get; set; }
     public string UserName { get; set; }
     public string Password { get; set; }
 
-    public Gender? Gender { get; set; } = null;
-    public DateTime? BirthDate { get; set; } = null;
+    public Gender Gender { get; set; } = Gender.Male;
 
-    //[Compare(nameof(Password))]
-    public string ConfirmedPassword { get; set; } = String.Empty;
+    // the default value in utcNow because of faster-search to find the user.
+    public DateTime? BirthDate { get; set; } = DateTime.UtcNow; 
+
+    public string ConfirmedPassword { get; set; }
 
     public string Captcha { get; set; } = String.Empty;
 
