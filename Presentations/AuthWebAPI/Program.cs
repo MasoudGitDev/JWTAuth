@@ -1,8 +1,9 @@
 using Apps.Services.Models;
+using FluentValidation;
 using Infra.Auth.ServiceConfigs;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Shared.Auth.Extensions;
+using Shared.Auth.ModelValidators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ var emailConfigModel =
 builder.Services.AddSingleton(emailConfigModel);
 builder.Services.Add_InfraAuth_Services();
 
+builder.Services.AddValidatorsFromAssemblyContaining<SignUpValidator>();
 
 builder.Services.AddSwaggerGen(opt => {
     opt.SwaggerDoc("v1" , new OpenApiInfo() { Title = "Jwt Authentication" });
@@ -37,7 +39,9 @@ builder.Services.AddSwaggerGen(opt => {
 
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(opt => {
+
+});
 builder.Services.AddEndpointsApiExplorer();
 
 
