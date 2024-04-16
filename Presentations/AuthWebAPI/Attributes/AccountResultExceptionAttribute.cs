@@ -7,7 +7,7 @@ namespace Shared.Auth.Attributes;
 
 [AttributeUsage(AttributeTargets.All)]
 public class AccountResultExceptionAttribute : Attribute, IExceptionFilter {
-    public void OnException(ExceptionContext context) {
+    public void OnException(ExceptionContext context) {       
         if(context.Exception is AccountException e) {
             context.Result = new JsonResult(new AccountResult(e.Errors));
             return;
