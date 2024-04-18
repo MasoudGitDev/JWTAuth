@@ -1,10 +1,11 @@
 ﻿using Apps.Auth.Abstractions;
-using Apps.Services.Services;
 using Domains.Auth.AppUserEntity.Aggregate;
 using Domains.Auth.AppUserEntity.Repos;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Auth.Attributes;
+using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
 using Shared.Auth.Models;
 using Shared.Auth.ValueObjects;
@@ -16,7 +17,7 @@ namespace AuthWebAPI.Controllers;
 public abstract class AuthController(IAccountUOW _unitOfWork) : ControllerBase {
 
     protected async Task<AppUser> GetExistingUserByEmail(string email)
-        => (await FindByEmailAsync(email)).ThrowIfNull($"No user found with this email: <{email}>.");
+        => ( await FindByEmailAsync(email) ).ThrowIfNull($"No user found with this email: <{email}>.");
 
     protected async Task<AppUser?> FindByEmailAsync(string email) {
         return await _unitOfWork.Queries.FindByEmailAsync(email);
@@ -60,8 +61,17 @@ public abstract class AuthController(IAccountUOW _unitOfWork) : ControllerBase {
     /// </summary>
     protected LinkModel CreateLink(
         string mainUrl = "https://localhost:7255" ,
-        string controllerName = "Accounts",
+        string controllerName = "Accounts" ,
         string actionName = "ConfirmEmail") {
         return new LinkModel($"{mainUrl}/{controllerName}/{actionName}/" + "{email}/{token}" , "{email}" , "{token}");
+    }
+
+    protected async Task<TModel> ValidateModelAsync<TValidator, TModel>(TValidator validator , TModel model)
+       where TValidator : IValidator<TModel> {
+        var validationResult = await validator.ValidateAsync(model);
+        if(validationResult.IsValid is false) {
+            throw new AccountException(validationResult.Errors.AsCodeMessages());
+        }
+        return model;
     }
 }

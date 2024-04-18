@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.Auth.Attributes;
 using Shared.Auth.DTOs;
 using Shared.Auth.Enums;
+using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
 using Shared.Auth.Models;
 using Shared.Auth.ModelValidators;
@@ -30,11 +31,12 @@ public class AccountController(IAccountUOW _unitOfWork)
     [AllowAnonymous]
     [HttpPost("Register")]
     public async Task<AccountResult> RegisterAsync([FromBody] SignUpDto model) {
-        var validationResult = await SignUpValidator.ValidateAsync(model);
-        if(validationResult.IsValid is false) {
-            return new AccountResult(validationResult.Errors.AsCodeMessages());
-        }
-        var (email, userName, password, gender, birthDate) = model.GetValues();
+        //var validationResult = await SignUpValidator.ValidateAsync(model);
+        //if(validationResult.IsValid is false) {
+        //    return new AccountResult(validationResult.Errors.AsCodeMessages());
+        //}
+        var (email, userName, password, gender, birthDate) = 
+            ( await ValidateModelAsync(SignUpValidator , model) ).GetValues();
 
         var appUser = AppUser.Create(userName,email,gender ?? Gender.Male,birthDate);
         return await AccountManager.RegisterAsync(appUser , password , GetEmailConformationLink);
@@ -62,6 +64,6 @@ public class AccountController(IAccountUOW _unitOfWork)
             message = "The Account has been deleted successfully"
         });
     }
-
+   
 
 }
