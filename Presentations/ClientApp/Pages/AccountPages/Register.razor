@@ -4,12 +4,10 @@
 @inject NavigationManager _nav
 @inject IAccountService _account
 
-<h3>Register</h3>
-
 <div class="row">
     <div class="row-cols-3"></div>
     <div class="row-cols-6">
-        <EditForm Enhance Model="_model" OnValidSubmit="SubmitASync">
+        <EditForm Enhance Model="_model" OnValidSubmit="onRegisterAsync">
             <AntiforgeryToken />
             <div class="form-group mb-1">
                <label class="form-label">Email</label>
@@ -22,8 +20,11 @@
             </div>
 
             <div class="form-group mb-1">
-                <label class="form-label" >Gender</label>
-                <input class="form-check" @bind="@_model.Gender" type="checkbox" />
+                <label class="form-label">Gender</label>
+                <select class="form-select" @bind="@_model.Gender">
+                    <option selected value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
             </div>
 
             <div class="form-group mb-1">
@@ -54,13 +55,66 @@
     <div class="row-cols-3"></div>
 </div>
 
-@code {
-    private SignUpDto _model = SignUpDto.Empty;
-    private async Task SubmitASync() {
-        Console.WriteLine(_model);
-        var accountResult = await _account.RegisterAsync(_model);
-        var authState = (AuthStateProvider)_authStateProvider;
-        await authState.SetStateAsync(accountResult);
-        _nav.NavigateTo("/", forceLoad : true);
+<div>
+
+    @if(Errors.Any()) {
+        <table class="table table-bordered table-striped mt-3 mb-1">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Errors) {
+                    <tr>
+                        <td>@item.Code</td>
+                        <td>@item.Message</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
+</div>
+
+
+@code {
+    private List<CodeMessage> Errors { get; set; } = [];
+    private const string navToPage = "/";
+
+    private SignUpDto _model = SignUpDto.Empty;
+    private async Task onRegisterAsync() {
+        try {
+            Errors.Clear();
+            var authState = (AuthStateProvider)_authStateProvider;
+            await authState.SetStateAsync(null);
+            var accountResult = await _account.RegisterAsync(_model);
+            await authState.SetStateAsync(accountResult);
+
+            if(accountResult.Status == ResultStatus.Succeed) {
+                _nav.NavigateTo(navToPage , forceLoad: true);
+                return;
+            }
+            IsNotConfirmedEmail(accountResult.Messages);
+        }
+        catch(Exception ex) {
+            Console.WriteLine(new { page = "Register", Models = _model });
+            Console.WriteLine(ex.Message);
+        }
+
+    }
+    private void IsNotConfirmedEmail(List<CodeMessage>? messages) {
+        if(messages  is null || !messages.Any()) {
+            Errors.Add(new("Unknown_Error" , "Some things is wrong."));
+            return;
+        }
+        if(messages.Count() == 1 && messages.Any(x => x.Code == TokenBlockReason.NotConfirmedEmail)) {
+            _nav.NavigateTo(navToPage , forceLoad: true);
+            return;
+        }
+        else {
+            Errors.AddRange(messages);
+        }
+    }
+
 }
