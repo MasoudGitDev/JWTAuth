@@ -1,6 +1,6 @@
 ﻿using Apps.Auth.Abstractions;
 using Microsoft.IdentityModel.Tokens;
-using Shared.Auth.Enums;
+using Shared.Auth.Constants;
 using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
 using Shared.Auth.Models;
@@ -29,11 +29,11 @@ internal class JwtService(AuthTokenSettingsModel _tokenSettings) : IAuthService 
         var securityToken = handler.ReadJwtToken(token);
         var claims = (securityToken.Claims.DistinctBy(x=>x.Type).ToDictionary(x=>x.Type, x => x.Value))
             .ThrowIfEmpty("Invalid claims.");
-        var isBlocked = claims.Where(x=> x.Key == AuthTokenType.IsBlocked).FirstOrDefault().Value.ToLower();
+        var isBlocked = claims.Where(x=> x.Key == TokenKey.IsBlocked).FirstOrDefault().Value.ToLower();
         if(Boolean.TryParse(isBlocked , out bool blockValue)) {
-            var reason = claims.Where(x=> x.Key == AuthTokenType.Reason).FirstOrDefault().Value;
+            var reason = claims.Where(x=> x.Key == TokenKey.Reason).FirstOrDefault().Value;
             return Task.FromResult(new AccountResult(token , claims ,
-                [new CodeMessage(AuthTokenType.IsBlocked , reason)]));
+                [new CodeMessage(TokenKey.IsBlocked , reason)]));
         }
         return Task.FromResult(new AccountResult(token , claims));
     }

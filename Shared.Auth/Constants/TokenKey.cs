@@ -1,5 +1,6 @@
-﻿namespace Shared.Auth.Enums;
-public static class AuthTokenType {
+﻿namespace Shared.Auth.Constants;
+public static class TokenKey
+{
 
     public const string DisplayName = "DisplayName";
     public const string UserId = "UserId";
@@ -9,7 +10,7 @@ public static class AuthTokenType {
 
     public const string Id = "id";
     public const string IssuerAt = "iat";
-    public const string Issuer  = "iss";
+    public const string Issuer = "iss";
     public const string ExpireAt = "exp";
     public const string Audience = "aud";
 

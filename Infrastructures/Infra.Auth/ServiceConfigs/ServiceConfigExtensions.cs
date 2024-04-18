@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Shared.Auth.Enums;
+using Shared.Auth.Constants;
 using Shared.Auth.Extensions;
 using Shared.Auth.Models;
 using System.Text;
@@ -84,7 +84,7 @@ public static class ServiceConfigExtensions {
             opt.Events = new JwtBearerEvents {
                 OnTokenValidated = async (ctx) => {
                     var claims =  ctx.Principal?.Claims;
-                    var userId = (claims?.Where(x=>x.Type == AuthTokenType.UserId)
+                    var userId = (claims?.Where(x=>x.Type == TokenKey.UserId)
                     .FirstOrDefault()?.Value)
                     .ThrowIfNullOrWhiteSpace("UserId");
                     var signInManager = ctx.HttpContext.RequestServices.CreateScope()

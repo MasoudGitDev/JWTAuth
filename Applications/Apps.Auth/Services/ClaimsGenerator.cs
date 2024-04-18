@@ -1,4 +1,4 @@
-﻿using Shared.Auth.Enums;
+﻿using Shared.Auth.Constants;
 using Shared.Auth.Models;
 using Shared.Auth.ValueObjects;
 using System.Security.Claims;
@@ -10,14 +10,14 @@ public sealed class ClaimsGenerator(AuthTokenSettingsModel tokenSettings) : ICla
 
     public Dictionary<string , string> CreateRegularClaims(AppUserId appUserId , string displayName = "") {
         var claims = Shared(appUserId,displayName);
-        claims.Add(AuthTokenType.IsBlocked , false.ToString());
-        claims.Add(AuthTokenType.Reason , "Ok");
+        claims.Add(TokenKey.IsBlocked , false.ToString());
+        claims.Add(TokenKey.Reason , "Ok");
         return claims;
     }
     public Dictionary<string , string> CreateBlockClaims(AppUserId appUserId , string reason, string displayName = "") {
         var claims = Shared(appUserId,displayName);
-        claims.Add(AuthTokenType.IsBlocked , true.ToString());
-        claims.Add(AuthTokenType.Reason , reason);
+        claims.Add(TokenKey.IsBlocked , true.ToString());
+        claims.Add(TokenKey.Reason , reason);
         return claims;
     }
 
@@ -25,13 +25,13 @@ public sealed class ClaimsGenerator(AuthTokenSettingsModel tokenSettings) : ICla
     // ========================== privates
     private Dictionary<string , string> Shared(AppUserId appUserId , string displayName)
      => new() {
-            { AuthTokenType.DisplayName , displayName},
-            { AuthTokenType.Id , Guid.NewGuid().ToString() },
-            { AuthTokenType.UserId , appUserId.Value.ToString() } ,
-            { AuthTokenType.IssuerAt , DateTime.UtcNow.ToString() } ,
-            { AuthTokenType.Issuer , tokenSettings.Issuer } ,
-            { AuthTokenType.Audience , tokenSettings.Audience } ,
-            { AuthTokenType.ExpireAt , DateTime.UtcNow.AddMinutes(tokenSettings.ExpireMinutes).ToString() },
+            { TokenKey.DisplayName , displayName},
+            { TokenKey.Id , Guid.NewGuid().ToString() },
+            { TokenKey.UserId , appUserId.Value.ToString() } ,
+            { TokenKey.IssuerAt , DateTime.UtcNow.ToString() } ,
+            { TokenKey.Issuer , tokenSettings.Issuer } ,
+            { TokenKey.Audience , tokenSettings.Audience } ,
+            { TokenKey.ExpireAt , DateTime.UtcNow.AddMinutes(tokenSettings.ExpireMinutes).ToString() },
      };
 
 }

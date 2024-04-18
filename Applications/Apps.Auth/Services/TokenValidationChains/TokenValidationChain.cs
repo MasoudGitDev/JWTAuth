@@ -1,4 +1,4 @@
-﻿using Shared.Auth.Enums;
+﻿using Shared.Auth.Constants;
 using Shared.Auth.Exceptions;
 
 namespace Apps.Auth.Services.TokenValidationChains;
@@ -37,12 +37,12 @@ internal abstract class TokenValidationChain
     }
 
     private string[] ClaimKeys => [
-        AuthTokenType.Id ,
-        AuthTokenType.UserId ,
-        AuthTokenType.IsBlocked ,
-        AuthTokenType.Issuer ,
-        AuthTokenType.IssuerAt ,
-        AuthTokenType.Audience ,
-        AuthTokenType.ExpireAt
+        TokenKey.Id ,
+        TokenKey.UserId ,
+        TokenKey.IsBlocked ,
+        TokenKey.Issuer ,
+        TokenKey.IssuerAt ,
+        TokenKey.Audience ,
+        TokenKey.ExpireAt
    ];
 }
