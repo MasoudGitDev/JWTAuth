@@ -25,6 +25,7 @@ public record AccountResult {
         AuthToken = authToken;
         KeyValueClaims = keyValueClaims;
         Messages = messages;
+        ResultStatus = ResultStatus.Succeed;
     }
 
     public AccountResult(List<CodeMessage> errors) {
