@@ -1,4 +1,7 @@
 ﻿namespace Shared.Auth.Enums;
-public enum ResultStatus {
-    Succeed = 0 , Failed = 1
+public record ResultStatus(string Name) {
+    public static ResultStatus Failed => new("failed");
+    public static ResultStatus Succeed => new("succeed");
+
+    public static implicit operator string(ResultStatus status) => status.Name;
 }
