@@ -14,7 +14,7 @@ namespace AuthWebAPI.Controllers;
 
 [Authorize]
 [AccountResultException]
-public abstract class AuthController(IAccountUOW _unitOfWork) : ControllerBase {
+public abstract class SecurityController(IAccountUOW _unitOfWork) : ControllerBase {
 
     protected async Task<AppUser> GetExistingUserByEmail(string email)
         => ( await FindByEmailAsync(email) ).ThrowIfNull($"No user found with this email: <{email}>.");
@@ -74,4 +74,17 @@ public abstract class AuthController(IAccountUOW _unitOfWork) : ControllerBase {
         }
         return model;
     }
+
+
+    [HttpPost("Validate")]
+    public async Task ValidateCaptchaAsync(string fileName, string userInput) {
+        var captchaValue =
+            HttpContext.Session.GetString(fileName)
+            ?? throw new AccountException("InvalidCaptcha" , $"This <captcha> key : <{fileName}> is invalid.");
+        if(!userInput.Equals(captchaValue , StringComparison.InvariantCultureIgnoreCase)) {
+            throw new AccountException("InvalidCaptcha" , $"This <captcha> value : <{userInput}> is invalid.");
+        }
+        await Task.CompletedTask;
+    }
+
 }
