@@ -1,0 +1,35 @@
+﻿@inject ICaptchaManagerService _captchaService;
+
+<div class="captcha_container">
+    <EditForm Enhance Model="Model" OnValidSubmit="OnValidateAsync">
+        <div class="captcha">
+            <div class="captcha_server">
+                <img class="captcha_img" src="@($"data:image/png;base64,{Model.Image}")" alt="Captcha Image" />
+                <div class="captcha_btn">
+                    <button class="captcha_btn_icon">R</button>
+                </div>
+            </div>
+            <div class="captcha_client">
+                <input class="captcha_input" @bind="Model.UserInput" />
+                <label class="captcha_status" for="@Model.Status" ></label>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public CaptchaModel Model { get; set; } = CaptchaModel.Empty;
+
+    // protected override async Task OnInitializedAsync() {
+    //     var(fileName , imageBase64str) = await _captchaService.GenerateAsync();
+    //     Model.FileName = fileName;
+    //     Model.Image = imageBase64str;
+    // }
+
+    private async Task OnValidateAsync() {
+
+    }
+}
