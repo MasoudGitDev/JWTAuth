@@ -8,6 +8,7 @@ using Shared.Auth.Enums;
 using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
 using Shared.Auth.Models;
+using Shared.Auth.RegularExpressions;
 
 namespace Infra.Auth.Implements.Managers;
 internal sealed class AccountManager(
@@ -25,11 +26,11 @@ internal sealed class AccountManager(
             .ThrowIfNull("Invalid-UserId")
             .Id.ToString());
     }
-    public async Task<AccountResult> LoginAsync(LoginType loginType ,
-        string loginName ,
+    public async Task<AccountResult> LoginAsync(string loginName ,
         string password ,
         bool isPersistent ,
         bool lockoutOnFailure = true) {  
+        var loginType = RegexType.Email.IsMatch(loginName) ? LoginType.Email : LoginType.UserName;
         var findUser = (loginType switch {
             LoginType.UserName => await _userManager.FindByNameAsync(loginName) ,
             LoginType.Email => await _userManager.FindByEmailAsync(loginName),
