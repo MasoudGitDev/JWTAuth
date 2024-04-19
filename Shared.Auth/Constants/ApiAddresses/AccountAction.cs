@@ -1,6 +1,5 @@
 ﻿namespace Shared.Auth.Constants.ApiAddresses;
-public record AccountAction(string Name)
-{
+public record AccountAction(string Name) {
 
     private static string BaseAddress(string name) => "Api/Account/" + name;
 
@@ -9,8 +8,7 @@ public record AccountAction(string Name)
     public static AccountAction LoginByToken => new(BaseAddress("LoginByToken"));
     public static AccountAction Delete => new(BaseAddress("Delete"));
 
-    public override string ToString()
-    {
+    public override string ToString() {
         return Name;
     }
     public static implicit operator string(AccountAction accountAction) => accountAction.Name;
