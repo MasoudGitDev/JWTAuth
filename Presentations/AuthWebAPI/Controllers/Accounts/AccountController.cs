@@ -41,7 +41,7 @@ public class AccountController(IAccountUOW _unitOfWork)
     [HttpPost("LoginByToken/{token}")]
     public async Task<AccountResult> LoginByTokenAsync([FromRoute] string token) {
         if(String.IsNullOrWhiteSpace(token)) {
-            return new AccountResult([ResultError.InvalidToken]);
+            return new AccountResult([ResultMessage.InvalidToken]);
         }
         return await AccountManager.LoginByTokenAsync(token);
     }  

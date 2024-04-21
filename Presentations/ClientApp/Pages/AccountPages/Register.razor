@@ -97,7 +97,7 @@
             Errors.Clear();
             Console.WriteLine(_captchaModel.Status);
             if(!CheckCaptchaStatus) {
-                Errors.Add(ResultError.InvalidCaptcha);
+                Errors.Add(ResultMessage.InvalidCaptcha);
                 await RefreshCaptchaAsync();
                 return;
             }
