@@ -39,9 +39,9 @@ public class CaptchaManagerService(HttpClient _httpClient) :  ICaptchaManagerSer
     public async Task<CodeMessage> ValidateAsync(CaptchaValidationDto model) {
         var response = await _httpClient.PostAsync(CaptchaAction.Validate , model.AsStringContent() , CancellationToken);
         if(!response.IsSuccessStatusCode) {
-            return ResultError.InvalidCaptcha;
+            return ResultMessage.InvalidCaptcha;
         }
-        return (await response.Content.ReadAsStringAsync()).FromJsonToType<CodeMessage>() ?? ResultError.InvalidCaptcha;
+        return (await response.Content.ReadAsStringAsync()).FromJsonToType<CodeMessage>() ?? ResultMessage.InvalidCaptcha;
 
     }
 }
