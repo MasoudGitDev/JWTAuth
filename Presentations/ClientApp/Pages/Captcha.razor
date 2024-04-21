@@ -15,11 +15,9 @@
             </div>
         </div>        
         <div class="captcha_client">
-            <input class="captcha_input" @bind="Model.UserInput" />
-            <button class="captcha_status" disabled="@(Model.Status==CaptchaStatus.Succeed)"
-                    form="captcha_form_id" >
-                <i class="@Status"></i>
-            </button>
+            <input @onblur="OnValidateAsync"  class="captcha_input"
+                   style="border:1px solid @BorderColor;" 
+                   @bind="Model.UserInput" />
         </div>
     </div>
 </EditForm>
@@ -31,6 +29,10 @@
 
     [Parameter]
     public EventCallback<CaptchaModel> OnChangedModel { get; set; }
+
+    private string BorderColor => Model.Status == CaptchaStatus.None
+        ? "rgba(100,100,100,.3)" : Model.Status == CaptchaStatus.Succeed
+        ? "green" : "red";
 
     protected override async Task OnInitializedAsync() {
         try {
@@ -61,12 +63,5 @@
         Model.UserInput = string.Empty;
         await OnChangedModel.InvokeAsync(Model);
     }
-
-    private string Status => Model.Status switch {
-        CaptchaStatus.None => "fa-regular fa-circle-question",
-            CaptchaStatus.Succeed => "fa-solid fa-square-check",
-            CaptchaStatus.Failed => "fa-solid fa-square-xmark",
-            _ => "fa-regular fa-question"
-        };    
-
+    public async Task RefreshAsync() => await OnRefreshAsync();
 }
