@@ -1,7 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using Shared.Auth.Constants;
 using Shared.Auth.DTOs;
-using Shared.Auth.Enums;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -63,7 +63,7 @@ internal sealed class AuthStateProvider(
 
     private static List<Claim> GetClaims(string token) {
         var claims = new JwtSecurityTokenHandler().ReadJwtToken(token).Claims.ToList() ?? [];
-        var displayName = claims.FirstOrDefault(x=>x.Type == AuthTokenType.DisplayName)?.Value ?? "<empty>";
+        var displayName = claims.FirstOrDefault(x=>x.Type == TokenKey.DisplayName)?.Value ?? "<empty>";
         claims.Add(new(ClaimTypes.Name ,displayName ));
         return claims;
     }
