@@ -21,7 +21,7 @@ internal sealed class AccountManagerService(HttpClient _httpClient)
         return await PostAsync(AccountAction.Login , model);
     }
 
-    public async Task<AccountResultDto> LoginByTokenAsync(string token) {
+    public async Task<AccountResultDto> LoginByTokenAsync(string token) {        
         return await PostAsync<string>($"{AccountAction.LoginByToken}/{token}" , null);
     }
 
