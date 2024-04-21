@@ -1,14 +1,14 @@
 ﻿@page "/Accounts/Register"
 @using System.Net.Http.Headers
+@using Shared.Auth.Constants.ApiAddresses
 
 @inject AuthenticationStateProvider _authStateProvider
 @inject NavigationManager _nav
 @inject IAccountService _account
 @inject ICaptchaManagerService _captchaService;
 
-<div class="row">
-    <div class="row-cols-3"></div>
-    <div class="row-cols-6 form_container">
+<div class="page_row">
+    <div class="col_form">
         <div class="edit_form">
             <EditForm id="signUpId" Enhance Model="_model" OnValidSubmit="onRegisterAsync">
                 <AntiforgeryToken />
@@ -48,36 +48,35 @@
 
         </div>
         <div class="captcha_row">
-            <Captcha Model="_captchaModel" OnChangedModel="HandleCaptchaChange" />
+            <Captcha @ref="captchaPage" Model="_captchaModel" OnChangedModel="HandleCaptchaChange" />
         </div>
         <div class="mb-1 form_btns">
             <button form="signUpId" class="btn btn-success">Register</button>
             <button  class="btn btn-success">Login</button>
         </div>
     </div>
-    <div class="row-cols-3"></div>
+    <div class="col_code_messages">
+        @if(Errors.Any()) {
+            <table class="table table-bordered table-striped" style="width:100%;height:100%;">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in Errors) {
+                        <tr>
+                            <td>@item.Code</td>
+                            <td>@item.Message</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>
 
-<div>
-    @if(Errors.Any()) {
-        <table class="table table-bordered table-striped mt-3 mb-1">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Message</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Errors) {
-                    <tr>
-                        <td>@item.Code</td>
-                        <td>@item.Message</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</div>
 
 
 
@@ -86,16 +85,22 @@
     private const string navToPage = "/";
     private CaptchaModel _captchaModel = CaptchaModel.Empty;
     private SignUpDto _model = SignUpDto.Empty;
+    private Captcha captchaPage;
 
     private void HandleCaptchaChange(CaptchaModel model) {
         _captchaModel = model;
     }
-
+    private async Task RefreshCaptchaAsync() => await captchaPage.RefreshAsync();
 
     private async Task onRegisterAsync() {
         try {
-            Console.WriteLine(_captchaModel.Status);
             Errors.Clear();
+            Console.WriteLine(_captchaModel.Status);
+            if(!CheckCaptchaStatus) {
+                Errors.Add(ResultError.InvalidCaptcha);
+                await RefreshCaptchaAsync();
+                return;
+            }
             var authState = (AuthStateProvider)_authStateProvider;
             await authState.SetStateAsync(null);
             var accountResult = await _account.RegisterAsync(_model);
@@ -126,5 +131,9 @@
             Errors.AddRange(messages);
         }
     }
+
+    private bool CheckCaptchaStatus 
+        =>  CaptchaStatus.Succeed == _captchaModel.Status ? true : false;
+    
 
 }
