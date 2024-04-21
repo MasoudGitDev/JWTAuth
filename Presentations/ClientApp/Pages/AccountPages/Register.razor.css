@@ -1,0 +1,44 @@
+﻿.form_container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;
+    width: 400px;
+    height: 100%;
+    gap: 5px;
+    border: 1px solid rgba(100,100,100,.3);
+    border-radius:10px;
+    padding:5px 0px 5px 0px;
+}
+.edit_form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;
+    width: 100%;
+    height: 100%;
+    padding:5px;
+}
+.captcha_row {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;
+    width: 100%;
+    height: 100%;
+}
+
+.form_btns{
+    position:relative;
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+}

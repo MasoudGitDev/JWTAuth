@@ -1,62 +1,64 @@
 ﻿@page "/Accounts/Register"
+@using System.Net.Http.Headers
 
 @inject AuthenticationStateProvider _authStateProvider
 @inject NavigationManager _nav
 @inject IAccountService _account
+@inject ICaptchaManagerService _captchaService;
 
 <div class="row">
     <div class="row-cols-3"></div>
-    <div class="row-cols-6">
-        <EditForm Enhance Model="_model" OnValidSubmit="onRegisterAsync">
-            <AntiforgeryToken />
-            <div class="form-group mb-1">
-               <label class="form-label">Email</label>
-                <input class="form-control" @bind="_model.Email" />
-            </div>
+    <div class="row-cols-6 form_container">
+        <div class="edit_form">
+            <EditForm id="signUpId" Enhance Model="_model" OnValidSubmit="onRegisterAsync">
+                <AntiforgeryToken />
+                <div class="form-group mb-1">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" style="width:300px;" @bind="_model.Email" />
+                </div>
 
-            <div class="form-group mb-1">
-                <label class="form-label" >UserName</label>
-                <input class="form-control" @bind="@_model.UserName" type="text" />
-            </div>
+                <div class="form-group mb-1">
+                    <label class="form-label">UserName</label>
+                    <input class="form-control" style="width:300px;" @bind="@_model.UserName" type="text" />
+                </div>
 
-            <div class="form-group mb-1">
-                <label class="form-label">Gender</label>
-                <select class="form-select" @bind="@_model.Gender">
-                    <option selected value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
-            </div>
+                <div class="form-group mb-1">
+                    <label class="form-label">Gender</label>
+                    <select class="form-select" style="width:300px;" @bind="@_model.Gender">
+                        <option selected value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
 
-            <div class="form-group mb-1">
-                <label class="form-label" >Password</label>
-                <input class="form-control" @bind="_model.Password" type="text" />
-            </div>
+                <div class="form-group mb-1">
+                    <label class="form-label" for="@_model.BirthDate">BirthDate</label>
+                    <input class="form-check" style="width:300px;height:40px;" @bind="@_model.BirthDate" type="date" />
+                </div>
 
-            <div class="form-group mb-1">
-                <label class="form-label" >ConfirmedPassword</label>
-                <input class="form-control" @bind="_model.ConfirmedPassword" type="text" />
-            </div>
+                <div class="form-group mb-1">
+                    <label class="form-label">Password</label>
+                    <input class="form-control" style="width:300px;" @bind="_model.Password" type="text" />
+                </div>
 
-            <div class="form-group mb-1">
-                <label class="form-label" for="@_model.BirthDate">BirthDate</label>
-                <input class="form-check" @bind="@_model.BirthDate" type="datetime" />
-            </div>
+                <div class="form-group mb-1">
+                    <label class="form-label">ConfirmedPassword</label>
+                    <input class="form-control" @bind="_model.ConfirmedPassword" type="text" />
+                </div>
+            </EditForm>
 
-            <div class="form-group mb-1">
-                <label class="form-label" for="@_model.Captcha">Captcha</label>
-                <input class="form-control" @bind="_model.Captcha" type="text" />
-            </div>
-
-            <div class="mb-1">
-                <button class="btn btn-success">Register</button>
-            </div>
-        </EditForm>
+        </div>
+        <div class="captcha_row">
+            <Captcha Model="_captchaModel" OnChangedModel="HandleCaptchaChange" />
+        </div>
+        <div class="mb-1 form_btns">
+            <button form="signUpId" class="btn btn-success">Register</button>
+            <button  class="btn btn-success">Login</button>
+        </div>
     </div>
     <div class="row-cols-3"></div>
 </div>
 
 <div>
-
     @if(Errors.Any()) {
         <table class="table table-bordered table-striped mt-3 mb-1">
             <thead>
@@ -78,13 +80,21 @@
 </div>
 
 
+
 @code {
     private List<CodeMessage> Errors { get; set; } = [];
     private const string navToPage = "/";
-
+    private CaptchaModel _captchaModel = CaptchaModel.Empty;
     private SignUpDto _model = SignUpDto.Empty;
+
+    private void HandleCaptchaChange(CaptchaModel model) {
+        _captchaModel = model;
+    }
+
+
     private async Task onRegisterAsync() {
         try {
+            Console.WriteLine(_captchaModel.Status);
             Errors.Clear();
             var authState = (AuthStateProvider)_authStateProvider;
             await authState.SetStateAsync(null);
