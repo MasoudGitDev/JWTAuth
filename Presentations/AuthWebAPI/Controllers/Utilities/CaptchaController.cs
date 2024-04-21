@@ -15,7 +15,6 @@ public class CaptchaController(ICaptcha _captcha , IDistributedCache _cache) : C
     public async Task<IActionResult> GenerateCaptcha() {
         var fileName = "captcha_" + Guid.NewGuid().ToString().Replace("-", "") + ".png";
         var (Image, ImageText) = await _captcha.GenerateAsync();
-        // HttpContext.Session.SetString(fileName , result.ImageText ?? "<invalid-image>");
         await _cache.SetStringAsync(fileName , ImageText);
         return new FileContentResult(Image , "image/png") { FileDownloadName = fileName };
     }
