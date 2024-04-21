@@ -31,7 +31,6 @@ public class CaptchaController(ICaptcha _captcha , IDistributedCache _cache) : C
         if(!userInput.Equals(captchaValue , StringComparison.InvariantCultureIgnoreCase)) {
             throw new AccountException("InvalidCaptcha" , $"This <captcha> value : <{userInput}> is invalid.");
         }
-        await _cache.RemoveAsync(fileName);
         return ResultMessage.ValidCaptcha;
     }
 }
