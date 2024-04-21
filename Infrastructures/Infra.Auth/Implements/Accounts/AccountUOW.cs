@@ -21,9 +21,6 @@ internal sealed class AccountUOW(
     public IEmailManager EmailManager => _emailManager;
     public IPasswordManager PasswordManager => _passwordManager;
     public IAccountManager AccountManager => _accountManager;
-
-   //public IDeviceInfo DeviceInfo => _deviceInfo;
-
     public void Delete<TEntity>(TEntity entity) where TEntity : IEntity {
         _dbContext.Remove(entity);
     }
