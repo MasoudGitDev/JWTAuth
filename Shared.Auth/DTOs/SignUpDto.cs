@@ -11,11 +11,9 @@ public record SignUpDto {
     public Gender Gender { get; set; } = Gender.Male;
 
     // the default value in utcNow because of faster-search to find the user.
-    public DateTime? BirthDate { get; set; } = DateTime.UtcNow;
+    public DateTime BirthDate { get; set; } = DateTime.UtcNow;
 
-    public string ConfirmedPassword { get; set; }
-
-    public string Captcha { get; set; } = String.Empty;
+    public string ConfirmedPassword { get; set; } = String.Empty;
 
     public static SignUpDto Empty => new();
     public (
