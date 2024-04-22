@@ -1,6 +1,4 @@
 ﻿@page "/Accounts/Register"
-@using System.Net.Http.Headers
-@using Shared.Auth.Constants.ApiAddresses
 
 @inject AuthenticationStateProvider _authStateProvider
 @inject NavigationManager _nav
@@ -45,14 +43,13 @@
                     <input class="form-control" @bind="_model.ConfirmedPassword" type="text" />
                 </div>
             </EditForm>
-
         </div>
         <div class="captcha_row">
             <Captcha @ref="captchaPage" Model="_captchaModel" OnChangedModel="HandleCaptchaChange" />
         </div>
         <div class="mb-1 form_btns">
-            <button form="signUpId" class="btn btn-success">Register</button>
-            <button  class="btn btn-success">Login</button>
+            <button type="submit" form="signUpId" class="btn btn-success">Register</button>
+            <button type="button"  class="btn btn-success" @onclick="GoToLoginPage">Login</button>
         </div>
     </div>
     <div class="col_code_messages">
@@ -86,6 +83,7 @@
     private CaptchaModel _captchaModel = CaptchaModel.Empty;
     private SignUpDto _model = SignUpDto.Empty;
     private Captcha captchaPage;
+    private bool CheckCaptchaStatus => CaptchaStatus.Succeed == _captchaModel.Status ? true : false;
 
     private void HandleCaptchaChange(CaptchaModel model) {
         _captchaModel = model;
@@ -95,7 +93,6 @@
     private async Task onRegisterAsync() {
         try {
             Errors.Clear();
-            Console.WriteLine(_captchaModel.Status);
             if(!CheckCaptchaStatus) {
                 Errors.Add(ResultMessage.InvalidCaptcha);
                 await RefreshCaptchaAsync();
@@ -132,8 +129,6 @@
         }
     }
 
-    private bool CheckCaptchaStatus 
-        =>  CaptchaStatus.Succeed == _captchaModel.Status ? true : false;
-    
+    private void GoToLoginPage() => _nav.NavigateTo("/Accounts/Login");
 
 }

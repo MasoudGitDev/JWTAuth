@@ -1,45 +1,76 @@
 ﻿@page "/Accounts/Login"
 
-@inject AuthenticationStateProvider _authState
+@inject AuthenticationStateProvider _authStateProvider
 @inject NavigationManager _navManager
 @inject IAccountService _accountManager
 
-
-<h3>Login</h3>
-
-<div class="row">
-    <div class="cols-2"></div>
-    <div class="col-8">
-
-        <EditForm Enhance Model="_model" OnValidSubmit="SubmitFormAsync">
+<div class="page_row">
+    <div class="col_form">
+        <EditForm id="login_id" Enhance Model="_model" OnValidSubmit="LoginAsync">
 
             <div class="form-group mb-1">
-                <label class="form-label">Type</label>
-                <input class="form-control" @bind="_model.LoginName" type="text" />
+                <label class="form-label">Email or UserName</label>
+                <input class="form-control" style="width:300px;" @bind="_model.LoginName" type="text" />
             </div>
 
             <div class="form-group mb-1">
                 <label class="form-label">Password</label>
-                <input class="form-check" @bind="_model.Password" type="text" />
-            </div>
-
-            <div>
-                <button class="btn btn-primary">Login</button>
-                <button class="btn btn-secondary" @onclick="@GotToForgotPasswordPage" >Forgot Password</button>
-                <button class="btn btn-secondary" @onclick="@GotToSignUpPage">SignUp</button>
+                <input class="form-control" style="width:300px;" @bind="_model.Password" type="password" />
             </div>
         </EditForm>
-
+        <div class="captcha_row">
+            <Captcha @ref="captchaPage" Model="_captchaModel" OnChangedModel="HandleCaptchaChange" />
+        </div>
+        <div class="mb-1 form_btns">
+            <button type="submit" form="login_id" class="btn btn-primary">Login</button>
+            <button type="button" class="btn btn-secondary" @onclick="@GotToForgotPasswordPage">Forgot Password</button>
+            <button type="button" class="btn btn-secondary" @onclick="@GotToSignUpPage">SignUp</button>
+        </div>
     </div>
-    <div class="cols-2"></div>
+    <div class="col_code_messages">
+        @if(Errors.Any()) {
+            <table class="table table-bordered table-striped" style="width:100%;height:100%;">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in Errors) {
+                        <tr>
+                            <td>@item.Code</td>
+                            <td>@item.Message</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>
 
 @code {
+    private List<CodeMessage> Errors { get; set; } = [];
+    private const string navToPage = "/";
+    private CaptchaModel _captchaModel = CaptchaModel.Empty;
     private LoginDto _model = new();
+    private Captcha captchaPage;
 
-    private async Task SubmitFormAsync() {
+    private void HandleCaptchaChange(CaptchaModel model) =>   _captchaModel = model; 
+    private async Task RefreshCaptchaAsync() => await captchaPage.RefreshAsync();
+    private bool CheckCaptchaStatus => CaptchaStatus.Succeed == _captchaModel.Status ? true : false;
+
+
+    private async Task LoginAsync() {
+        Errors.Clear();
+        if(!CheckCaptchaStatus) {
+            Errors.Add(ResultMessage.InvalidCaptcha);
+            await RefreshCaptchaAsync();
+            return;
+        }
+        var authState = (AuthStateProvider)_authStateProvider;
+        await authState.SetStateAsync(null);
         var accountResult = await _accountManager.LoginAsync(_model);
-        var authState = (AuthStateProvider)_authState;
         await authState.SetStateAsync(accountResult);
 
         if(accountResult.Status == ResultStatus.Failed) {           
@@ -53,10 +84,8 @@
         else {
             _navManager.NavigateTo("Dashboard" , forceLoad: true);
         }
-
-
     }
 
     private void GotToForgotPasswordPage() => _navManager.NavigateTo("/Accounts/ForgotPassword");
-    private void GotToSignUpPage() => _navManager.NavigateTo("/Accounts/SignUp");
+    private void GotToSignUpPage() => _navManager.NavigateTo("/Accounts/Register");
 }
