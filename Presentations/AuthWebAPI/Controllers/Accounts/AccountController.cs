@@ -26,7 +26,7 @@ public class AccountController(IAccountUOW _unitOfWork)
     private LinkModel GetEmailConformationLink => CreateLink();
 
     private IValidator<SignUpDto> SignUpValidator => new SignUpValidator();
-
+    private IValidator<LoginDto> LoginValidator => new LoginValidator();
 
     [AllowAnonymous]
     [HttpPost("Register")]
@@ -49,9 +49,8 @@ public class AccountController(IAccountUOW _unitOfWork)
     [AllowAnonymous]
     [HttpPost("Login")]
     public async Task<AccountResult> LoginAsync([FromBody] LoginDto model) {
-        var (loginName, password, isPersistent) = model.GetValues();
-        var result = await AccountManager.LoginAsync(loginName , password , isPersistent , false);
-        return result;
+        var (loginName, password, isPersistent) = ( await ValidateModelAsync(LoginValidator , model) ).GetValues();
+        return await AccountManager.LoginAsync(loginName , password , isPersistent , false);
     }
 
     [HttpDelete("Delete")]
