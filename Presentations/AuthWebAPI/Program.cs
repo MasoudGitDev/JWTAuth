@@ -39,6 +39,13 @@ builder.Services.AddSwaggerGen(opt => {
 
 });
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(opt => {
+    opt.Cookie.HttpOnly = true;
+    opt.IdleTimeout = TimeSpan.FromMinutes(5);
+    opt.Cookie.IsEssential = true;
+});
+
 builder.Services.AddControllers(opt => {
 
 });
@@ -63,13 +70,16 @@ app.UseCors(opt => {
     //    "http://localhost:5038")
     opt.AllowAnyOrigin()
     .AllowAnyMethod()
-    .AllowAnyHeader();
+    .AllowAnyHeader()
+    .WithExposedHeaders("Content-Disposition");
 });
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 
 app.MapControllers();
