@@ -62,30 +62,42 @@
 
 
     private async Task LoginAsync() {
-        Errors.Clear();
-        if(!CheckCaptchaStatus) {
-            Errors.Add(ResultMessage.InvalidCaptcha);
-            await RefreshCaptchaAsync();
-            return;
-        }
-        var authState = (AuthStateProvider)_authStateProvider;
-        await authState.SetStateAsync(null);
-        var accountResult = await _accountManager.LoginAsync(_model);
-        await authState.SetStateAsync(accountResult);
-
-        if(accountResult.Status == ResultStatus.Failed) {           
-            foreach(var item in accountResult.Messages) {
-                Console.WriteLine(item);                
-                if(item.Code == "NotConfirmedEmail") {
-                    _navManager.NavigateTo("Accounts/ResendEmailConformationLink" ,forceLoad:true);
-                }
+        try {
+            Errors.Clear();
+            if(!CheckCaptchaStatus) {
+                Errors.Add(ResultMessage.InvalidCaptcha);
+                await RefreshCaptchaAsync();
+                return;
             }
+            var authState = (AuthStateProvider)_authStateProvider;
+            await authState.SetStateAsync(null);
+            var accountResult = await _accountManager.LoginAsync(_model);
+            await authState.SetStateAsync(accountResult);
+
+            if(accountResult.Status == ResultStatus.Succeed) {
+                _navManager.NavigateTo(navToPage , forceLoad: true);
+                return;
+            }
+            IsNotConfirmedEmail(accountResult.Messages);
         }
-        else {
-            _navManager.NavigateTo("Dashboard" , forceLoad: true);
+        catch(Exception ex) {
+            Errors.Add(new("Unknown_Error", "Some thing is wrong."));
         }
     }
 
     private void GotToForgotPasswordPage() => _navManager.NavigateTo("/Accounts/ForgotPassword");
     private void GotToSignUpPage() => _navManager.NavigateTo("/Accounts/Register");
+    private void IsNotConfirmedEmail(List<CodeMessage>? messages) {
+        if(messages is null || !messages.Any()) {
+            Errors.Add(new("Unknown_Error" , "Some things is wrong."));
+            return;
+        }
+        if(messages.Count() == 1 && messages.Any(x => x.Code == TokenBlockReason.NotConfirmedEmail)) {
+            _navManager.NavigateTo(navToPage , forceLoad: true);
+            return;
+        }
+        else {
+            Errors.AddRange(messages);
+        }
+    }
 }
