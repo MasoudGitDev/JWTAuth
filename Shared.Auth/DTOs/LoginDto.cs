@@ -5,8 +5,8 @@ public record LoginDto {
     /// <summary>
     /// LoginName Can be Email or UserName.
     /// </summary>
-    public string LoginName { get; set; }
-    public string Password { get; set; }
+    public string LoginName { get; set; } = String.Empty;
+    public string Password { get; set; } = String.Empty;
     public bool IsPersistent { get; set; } = false;    
 
     //Enable these later for search faster
