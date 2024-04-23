@@ -75,16 +75,4 @@ public abstract class SecurityController(IAccountUOW _unitOfWork) : ControllerBa
         return model;
     }
 
-
-    [HttpPost("Validate")]
-    public async Task ValidateCaptchaAsync(string fileName, string userInput) {
-        var captchaValue =
-            HttpContext.Session.GetString(fileName)
-            ?? throw new AccountException("InvalidCaptcha" , $"This <captcha> key : <{fileName}> is invalid.");
-        if(!userInput.Equals(captchaValue , StringComparison.InvariantCultureIgnoreCase)) {
-            throw new AccountException("InvalidCaptcha" , $"This <captcha> value : <{userInput}> is invalid.");
-        }
-        await Task.CompletedTask;
-    }
-
 }
