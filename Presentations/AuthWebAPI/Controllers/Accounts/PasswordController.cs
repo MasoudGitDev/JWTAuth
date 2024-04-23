@@ -11,7 +11,7 @@ namespace AuthWebAPI.Controllers.Accounts;
 [Route("api/[controller]")]
 [ApiController]
 public class PasswordController(IAccountUOW _unitOfWork)
-    : AuthController(_unitOfWork.ThrowIfNull(nameof(IAccountUOW))) {
+    : SecurityController(_unitOfWork.ThrowIfNull(nameof(IAccountUOW))) {
 
     [HttpPut("Change")]
     public async Task<AccountResult> ChangeAsync([FromBody] ChangePasswordDto model) {

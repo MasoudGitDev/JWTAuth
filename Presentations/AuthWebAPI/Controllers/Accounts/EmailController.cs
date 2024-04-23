@@ -14,7 +14,7 @@ namespace AuthWebAPI.Controllers.Accounts;
 [Route("Api/[controller]")]
 [ApiController]
 public class EmailController(IAccountUOW _unitOfWork)
-    : AuthController(_unitOfWork.ThrowIfNull(nameof(IAccountUOW))) {
+    : SecurityController(_unitOfWork.ThrowIfNull(nameof(IAccountUOW))) {
 
     private IEmailManager EmailManager => _unitOfWork.EmailManager;
     private LinkModel GetEmailConformationLink => CreateLink();
