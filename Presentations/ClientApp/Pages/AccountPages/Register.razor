@@ -8,7 +8,7 @@
 <div class="page_row">
     <div class="col_form">
         <div class="edit_form">
-            <EditForm id="signUpId" Enhance Model="_model" OnValidSubmit="onRegisterAsync">
+            <EditForm id="signUpId" Enhance Model="_model" OnValidSubmit="onRegisterAsync">               
                 <AntiforgeryToken />
                 <div class="form-group mb-1">
                     <label class="form-label">Email</label>
@@ -112,6 +112,7 @@
         catch(Exception ex) {
             Console.WriteLine(new { page = "Register", Models = _model });
             Console.WriteLine(ex.Message);
+            Errors.Add(new("Unknown_Error" , "Some things is wrong."));
         }
 
     }
@@ -130,5 +131,6 @@
     }
 
     private void GoToLoginPage() => _nav.NavigateTo("/Accounts/Login");
+    
 
 }
