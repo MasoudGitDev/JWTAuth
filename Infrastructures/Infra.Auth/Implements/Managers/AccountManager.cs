@@ -36,8 +36,7 @@ internal sealed class AccountManager(
             LoginType.Email => await _userManager.FindByEmailAsync(loginName),
             _ => throw new AccountException("Invalid-LoginType" , "The <login-type> is invalid.")
         }) ??
-            throw new AccountException("InvalidData" ,
-            $"Please check [ loginType : <{loginType}>, loginName : <{loginName}> , password <***> ] again.");
+            throw new AccountException("InvalidData" ,"LoginName or Password is wrong.");
 
         var result = await _signInManager.PasswordSignInAsync(findUser , password , isPersistent , lockoutOnFailure);
         var isEmailConfirmed = await HandleSignInResultAsync(result , findUser , password);
