@@ -1,16 +1,38 @@
 ﻿@inherits LayoutComponentBase
+
+@inject AuthenticationStateProvider _authStateProvider
+@inject NavigationManager _navManager
+
+<style>
+   
+</style>
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="main_toolbar_container">
+            <AuthorizeView>
+                <Authorized>
+                    <button class="btn btn-outline-danger" @onclick="SignOutAsync">Logout</button>
+                </Authorized>
+                <NotAuthorized>
+                    <button class="btn btn-outline-primary" @onclick="GoToLoginPage">Login</button>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
-
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+@code{
+    private void GoToLoginPage() => _navManager.NavigateTo("/Accounts/Login");
+    private async Task SignOutAsync() {
+        var authState = (AuthStateProvider)_authStateProvider;
+        await authState.SetStateAsync(null);
+    }
+}
