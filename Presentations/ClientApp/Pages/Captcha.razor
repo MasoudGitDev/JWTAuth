@@ -1,5 +1,4 @@
-﻿@using global::Shared.Auth.Constants.ApiAddresses
-@inject ICaptchaManagerService _captchaService;
+﻿@inject ICaptchaManagerService _captchaService;
 
 <EditForm id="captcha_form_id" Enhance Model="Model" OnValidSubmit="OnValidateAsync">
     <div class="captcha">
@@ -7,9 +6,9 @@
             <div class="captcha_img_container">
                 <img class="captcha_img" src="@($"data:image/png;base64,{Model.Image}")" alt="Captcha Image" />
             </div>            
-            <div class="captcha_btn">
-                <button type="button" class="captcha_btn_icon" @onclick="OnRefreshAsync">
-                    <i class="fa fa-refresh" aria-hidden="true"></i>
+            <div class="captcha_btn_container">
+                <button type="button" class="captcha_btn" @onclick="OnRefreshAsync">
+                    <i class="fa fa-refresh captcha_btn_icon" aria-hidden="true"></i>
                 </button>
 
             </div>
