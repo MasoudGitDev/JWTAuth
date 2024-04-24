@@ -7,6 +7,7 @@ public record ResultMessage(string Code , string Message) {
     public static ResultMessage InvalidCaptcha => new("InvalidCaptcha" , "The <captcha> is invalid.");
 
     public static ResultMessage ValidCaptcha => new("ValidCaptcha" , "The <captcha> is validated successfully.");
+    public static ResultMessage NotConfirmedEmail => new("NotConfirmedEmail" , "Please confirm your email address.");
 
     public static implicit operator CodeMessage(ResultMessage model) => new(model.Code , model.Message);
 
