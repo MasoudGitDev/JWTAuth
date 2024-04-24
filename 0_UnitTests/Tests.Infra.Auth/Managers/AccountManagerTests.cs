@@ -1,4 +1,6 @@
-﻿using Apps.Services.Services.Security;
+﻿using Apps.Services.Models;
+using Apps.Services.Services;
+using Apps.Services.Services.Security;
 using Domains.Auth.AppUserEntity.Aggregate;
 using FluentAssertions;
 using Infra.Auth.Implements.Managers;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using Moq.AutoMock;
 using Shared.Auth.Constants;
+using Shared.Auth.Constants.ApiAddresses;
 using Shared.Auth.Models;
 using Shared.Auth.ValueObjects;
 
@@ -20,6 +23,60 @@ public class AccountManagerTests {
         _accountManager = _mocker.CreateInstance<AccountManager>();
     }
 
+    [Fact]
+    public async Task Register_Should_Return_Valid_AccountResult() {
+        //Arrange
+        var (mockUser, userClaims) = CreateUserAndClaims(true , ResultMessage.NotConfirmedEmail.Code);
+        mockUser.EmailConfirmed = false;
+        string emailToken = "email_token";
+       MessageModel msg = new MessageModel(){Subject = "Email-Conformation-Link" , Body = "test-link" , To = [mockUser.Email] };
+
+        _mocker.GetMock<UserManager<AppUser>>()
+           .Setup(x => x.CreateAsync(mockUser))
+           .ReturnsAsync(IdentityResult.Success);
+
+        _mocker.GetMock<UserManager<AppUser>>()
+            .Setup(x => x.AddPasswordAsync(mockUser, It.IsAny<string>()))
+            .ReturnsAsync(IdentityResult.Success);
+
+        _mocker.GetMock<UserManager<AppUser>>()
+           .Setup(x => x.GenerateEmailConfirmationTokenAsync(mockUser))
+           .ReturnsAsync(emailToken);
+
+        _mocker.GetMock<IMessageSender>()
+            .Setup(x => x.SendAsync(It.IsAny<MessageModel>()))
+            .Callback<MessageModel>((message) => {
+                msg = message;
+            });
+
+        _mocker.GetMock<IClaimsGenerator>()
+            .Setup(x => x.CreateBlockClaims(mockUser.Id , ResultMessage.NotConfirmedEmail.Code , mockUser.UserName))
+            .Returns(userClaims);
+
+        _mocker.GetMock<IAuthTokenService>()
+          .Setup(x => x.GenerateAsync(It.IsAny<Dictionary<string , string>>() , new() { ResultMessage.NotConfirmedEmail }))
+          .ReturnsAsync(new AccountResult("jwt_token" , userClaims));
+
+        //Act 
+        var accountResult = await _accountManager.RegisterAsync(
+            mockUser,"Password123/" ,
+            new("test_link" , mockUser.Email , emailToken));
+
+        //Assert
+        mockUser.EmailConfirmed.Should().BeFalse();
+        accountResult.Should().NotBeNull();
+        accountResult.AuthToken.Should().NotBeNullOrWhiteSpace();
+        var claims =  accountResult.KeyValueClaims;
+        claims.Should().NotBeNull().And.HaveCount(10);
+       
+        _mocker.Verify<UserManager<AppUser>>(x => x.CreateAsync(mockUser) , Times.Once);
+        _mocker.Verify<UserManager<AppUser>>(x => x.AddPasswordAsync(mockUser , It.IsAny<string>()) , Times.Once);
+        _mocker.Verify<UserManager<AppUser>>(x => x.GenerateEmailConfirmationTokenAsync(mockUser),Times.Once);
+        _mocker.Verify<IMessageSender>(x => x.SendAsync(It.IsAny<MessageModel>()) , Times.Once);       
+        _mocker.Verify<IClaimsGenerator>(x => x.CreateBlockClaims(
+            It.IsAny<AppUserId>() , It.IsAny<string>() , It.IsAny<string>()) , Times.Once);
+        _mocker.Verify<IAuthTokenService>(x => x.GenerateAsync(It.IsAny<Dictionary<string , string>>() , new() { ResultMessage.NotConfirmedEmail }) , Times.Once);
+    }
 
     [Fact]
     public async Task Login_With_UserName_Should_Return_Valid_AccountResult() {
@@ -55,7 +112,8 @@ public class AccountManagerTests {
 
 
     //=============================== privates
-    private static (AppUser MockUser, Dictionary<string , string> Claims) CreateUserAndClaims() {
+    private static (AppUser MockUser, Dictionary<string , string> Claims) CreateUserAndClaims(
+        bool isBlocked = false , string reason = "OK") {
 
         var mockUser = new AppUser {
             Id = Guid.NewGuid() ,
@@ -71,8 +129,8 @@ public class AccountManagerTests {
             { TokenKey.Issuer , "test_issuer" } ,
             { TokenKey.Audience , "test_audience" } ,
             { TokenKey.ExpireAt , DateTime.UtcNow.AddMinutes(60).ToString() },
-            {TokenKey.IsBlocked , false.ToString() } ,
-            {TokenKey.Reason , "OK" } ,
+            {TokenKey.IsBlocked , isBlocked.ToString()} ,
+            {TokenKey.Reason , reason } ,
             { TokenKey.NotBefore , DateTime.UtcNow.ToString() }
         };
         return (mockUser, userClaims);
