@@ -13,5 +13,6 @@ public static class TokenKey
     public const string Issuer = "iss";
     public const string ExpireAt = "exp";
     public const string Audience = "aud";
+    public const string NotBefore = "nbf";
 
 }
