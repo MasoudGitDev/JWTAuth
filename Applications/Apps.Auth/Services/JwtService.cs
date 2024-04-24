@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Apps.Auth.Services;
 
-internal class JwtService(AuthTokenSettingsModel _tokenSettings) : IAuthService {
+internal class JwtService(AuthTokenSettingsModel _tokenSettings) : IAuthTokenService {
 
     private readonly byte[] _securityKey = Encoding.UTF8.GetBytes(_tokenSettings.SecretKey);
 
@@ -38,7 +38,7 @@ internal class JwtService(AuthTokenSettingsModel _tokenSettings) : IAuthService 
         return Task.FromResult(new AccountResult(token , claims));
     }
 
-    public Task<AccountResult> GenerateTokenAsync(Dictionary<string , string> claims ,
+    public Task<AccountResult> GenerateAsync(Dictionary<string , string> claims ,
         List<CodeMessage>? errors = default) {
         var userClaims = new List<Claim>();
         Parallel.ForEach(claims , item => {

@@ -10,7 +10,7 @@ using Shared.Auth.Models;
 namespace Infra.Auth.Implements.Managers;
 internal sealed class EmailManager(
     SignInManager<AppUser> _signInManager ,
-    IAuthService _authService ,
+    IAuthTokenService _authService ,
     IClaimsGenerator _claimsGenerator ,
     IMessageSender _messageSender
     ) : SharedManager(_messageSender , _signInManager), IEmailManager {
@@ -23,7 +23,7 @@ internal sealed class EmailManager(
             throw new AccountException("InvalidToken" ,
                 "Due to invalid token , the new email has been not confirmed.");
         }
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
+        return await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 
     public async Task<AccountResult> RequestToChangeAsync(AppUser appUser , string newEmail , LinkModel model) {
@@ -31,7 +31,7 @@ internal sealed class EmailManager(
         var token = await _userManager.GenerateChangeEmailTokenAsync(appUser, newEmail);
         string link = CorrectLink(appUser.Id.ToString(), token, model);
         await SendTokenLinkToEmailAsync(appUser.Email! , "Change-Email" , link);
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id)); // check later
+        return await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(appUser.Id)); // check later
     }
 
     public async Task<AccountResult> ConfirmAsync(AppUser appUser , string confirmationToken) {
@@ -39,7 +39,7 @@ internal sealed class EmailManager(
         if(!result.Succeeded) {
             throw new AccountException("InvalidToken" , "The <email-confirmation-token> is invalid.");
         }
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
+        return await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 
 
@@ -56,7 +56,7 @@ internal sealed class EmailManager(
         var result = await CreateTokenLinkAsync(appUser, model , _userManager.GenerateEmailConfirmationTokenAsync );
         Console.WriteLine(new { emailConformationLink = result.Link });
         await SendTokenLinkToEmailAsync(appUser.Email! , "Email-Conformation_link" , result.Link);
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
+        return await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 
 

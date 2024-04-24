@@ -26,13 +26,13 @@ public class EmailController(IAccountUOW _unitOfWork)
         if(appUser.Email != model.Email) {
             throw new AccountException("InvalidRouteId" , $"This email : <{model.Email}> not belong to you.");
         }
-        return await EmailManager.ConfirmEmailAsync(await GetUserAsync() , HttpUtility.UrlDecode(model.Token));
+        return await EmailManager.ConfirmAsync(await GetUserAsync() , HttpUtility.UrlDecode(model.Token));
     }
 
     [HttpPost("ResendEmailConformationLink")]
     public async Task<AccountResult> ResendEmailConformationLinkAsync() {
 
-        return await EmailManager.ResendEmailConformationLink(await GetUserAsync() , GetEmailConformationLink);
+        return await EmailManager.ResendConformationLink(await GetUserAsync() , GetEmailConformationLink);
     }
 
 }

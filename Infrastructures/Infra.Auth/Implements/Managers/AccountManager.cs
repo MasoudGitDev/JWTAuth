@@ -12,7 +12,7 @@ using Shared.Auth.RegularExpressions;
 
 namespace Infra.Auth.Implements.Managers;
 internal sealed class AccountManager(
-    IAuthService _authService ,
+    IAuthTokenService _authService ,
     SignInManager<AppUser> _signInManager ,
     IMessageSender _messageSender ,
     IClaimsGenerator _claimsGenerator
@@ -41,8 +41,8 @@ internal sealed class AccountManager(
         var result = await _signInManager.PasswordSignInAsync(findUser , password , isPersistent , lockoutOnFailure);
         var isEmailConfirmed = await HandleSignInResultAsync(result , findUser , password);
         return isEmailConfirmed
-            ? await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(findUser.Id , findUser.UserName!))
-            : await _authService.GenerateTokenAsync(
+            ? await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(findUser.Id , findUser.UserName!))
+            : await _authService.GenerateAsync(
                 _claimsGenerator.CreateBlockClaims(findUser.Id ,"NotConfirmedEmail" , findUser.UserName!) ,
                 errors: [new CodeMessage("NotConfirmedEmail" , "Please Confirm your email.")]);
     }
@@ -51,7 +51,7 @@ internal sealed class AccountManager(
         AppUser createUser = await CreateUserAsync(appUserModel , password);
         var result = await CreateTokenLinkAsync(createUser, model , _userManager.GenerateEmailConfirmationTokenAsync );
         await SendTokenLinkToEmailAsync(createUser.Email! , "Email-Conformation_link" , result.Link);
-        return await _authService.GenerateTokenAsync(
+        return await _authService.GenerateAsync(
             _claimsGenerator.CreateBlockClaims(createUser.Id ,"NotConfirmedEmail" , appUserModel.UserName!) ,
             errors : [new CodeMessage("NotConfirmedEmail" , "Please Confirm your email.")]);
     }

@@ -2,8 +2,8 @@
 using Shared.Auth.ValueObjects;
 
 namespace Apps.Auth.Abstractions;
-public interface IAuthService {
-    Task<AccountResult> GenerateTokenAsync(
+public interface IAuthTokenService {
+    Task<AccountResult> GenerateAsync(
         Dictionary<string , string> claims ,
         List<CodeMessage>? errors = default);
 

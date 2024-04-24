@@ -41,7 +41,7 @@ public class JwtServiceTests {
         };
 
         //Act
-        var accountResult = await _jwtService.GenerateTokenAsync(claims);
+        var accountResult = await _jwtService.GenerateAsync(claims);
 
         //Assert
         SharedAssert(accountResult);

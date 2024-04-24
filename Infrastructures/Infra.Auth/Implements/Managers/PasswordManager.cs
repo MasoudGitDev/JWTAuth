@@ -13,7 +13,7 @@ namespace Infra.Auth.Implements.Managers;
 
 internal class PasswordManager(
     SignInManager<AppUser> _signInManager,
-    IAuthService _authService,
+    IAuthTokenService _authService,
     IClaimsGenerator _claimsGenerator,
     IMessageSender _messageSender , 
     AppWriteDbContext _dbContext
@@ -36,7 +36,7 @@ internal class PasswordManager(
         {
             throw new AccountException("ChangePasswordError", string.Join(',', result.Errors));
         }
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
+        return await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 
     public async Task ForgotAsync(AppUser appUser, LinkModel model)
@@ -59,6 +59,6 @@ internal class PasswordManager(
         if(appUser.PhoneNumberConfirmed) {
             // send a second conformation by sms
         }
-        return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
+        return await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 }
