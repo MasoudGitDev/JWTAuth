@@ -3,6 +3,7 @@ using Apps.Services.Services.AccountManagers;
 using Apps.Services.Services.Security;
 using Domains.Auth.AppUserEntity.Aggregate;
 using Microsoft.AspNetCore.Identity;
+using Shared.Auth.Constants.ApiAddresses;
 using Shared.Auth.Enums;
 using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
@@ -15,7 +16,8 @@ internal sealed class AccountManager(
     SignInManager<AppUser> _signInManager ,
     IMessageSender _messageSender ,
     IClaimsGenerator _claimsGenerator
-    ) : SharedManager(_messageSender , _signInManager), IAccountManager {
+    ) : SharedManager(_messageSender ,
+        _signInManager.ThrowIfNull("The <SignInManager> can not be null.")), IAccountManager {
 
     private readonly UserManager<AppUser> _userManager = _signInManager.UserManager;
 
@@ -28,7 +30,7 @@ internal sealed class AccountManager(
     public async Task<AccountResult> LoginAsync(string loginName ,
         string password ,
         bool isPersistent ,
-        bool lockoutOnFailure = true) {  
+        bool lockoutOnFailure = true) {
         var loginType = RegexType.Email.IsMatch(loginName) ? LoginType.Email : LoginType.UserName;
         var findUser = (loginType switch {
             LoginType.UserName => await _userManager.FindByNameAsync(loginName) ,
@@ -42,8 +44,8 @@ internal sealed class AccountManager(
         return isEmailConfirmed
             ? await _authService.GenerateAsync(_claimsGenerator.CreateRegularClaims(findUser.Id , findUser.UserName!))
             : await _authService.GenerateAsync(
-                _claimsGenerator.CreateBlockClaims(findUser.Id ,"NotConfirmedEmail" , findUser.UserName!) ,
-                errors: [new CodeMessage("NotConfirmedEmail" , "Please Confirm your email.")]);
+                _claimsGenerator.CreateBlockClaims(findUser.Id , ResultMessage.NotConfirmedEmail.Code, findUser.UserName!) ,
+                errors: [ResultMessage.NotConfirmedEmail]);
     }
 
     public async Task<AccountResult> RegisterAsync(AppUser appUserModel , string password , LinkModel model) {
@@ -51,8 +53,8 @@ internal sealed class AccountManager(
         var result = await CreateTokenLinkAsync(createUser, model , _userManager.GenerateEmailConfirmationTokenAsync );
         await SendTokenLinkToEmailAsync(createUser.Email! , "Email-Conformation_link" , result.Link);
         return await _authService.GenerateAsync(
-            _claimsGenerator.CreateBlockClaims(createUser.Id ,"NotConfirmedEmail" , appUserModel.UserName!) ,
-            errors : [new CodeMessage("NotConfirmedEmail" , "Please Confirm your email.")]);
+            _claimsGenerator.CreateBlockClaims(createUser.Id , ResultMessage.NotConfirmedEmail.Code , appUserModel.UserName!) ,
+            errors: [ResultMessage.NotConfirmedEmail]);
     }
 
 
