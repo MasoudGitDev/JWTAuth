@@ -17,7 +17,7 @@ internal sealed class EmailManager(
 
     private readonly UserManager<AppUser> _userManager = _signInManager.UserManager;
 
-    public async Task<AccountResult> ChangeEmailAsync(AppUser appUser , string newEmail , string token) {
+    public async Task<AccountResult> ChangeAsync(AppUser appUser , string newEmail , string token) {
         var result = await _userManager.ChangeEmailAsync(appUser, newEmail, token);
         if(!result.Succeeded) {
             throw new AccountException("InvalidToken" ,
@@ -26,7 +26,7 @@ internal sealed class EmailManager(
         return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id));
     }
 
-    public async Task<AccountResult> RequestChangeEmailAsync(AppUser appUser , string newEmail , LinkModel model) {
+    public async Task<AccountResult> RequestToChangeAsync(AppUser appUser , string newEmail , LinkModel model) {
 
         var token = await _userManager.GenerateChangeEmailTokenAsync(appUser, newEmail);
         string link = CorrectLink(appUser.Id.ToString(), token, model);
@@ -34,7 +34,7 @@ internal sealed class EmailManager(
         return await _authService.GenerateTokenAsync(_claimsGenerator.CreateRegularClaims(appUser.Id)); // check later
     }
 
-    public async Task<AccountResult> ConfirmEmailAsync(AppUser appUser , string confirmationToken) {
+    public async Task<AccountResult> ConfirmAsync(AppUser appUser , string confirmationToken) {
         var result = await _userManager.ConfirmEmailAsync(appUser, confirmationToken);
         if(!result.Succeeded) {
             throw new AccountException("InvalidToken" , "The <email-confirmation-token> is invalid.");
@@ -44,7 +44,7 @@ internal sealed class EmailManager(
 
 
 
-    public async Task<AccountResult> ResendEmailConformationLink(AppUser appUser , LinkModel model) {
+    public async Task<AccountResult> ResendConformationLink(AppUser appUser , LinkModel model) {
         return await PrepareEmailConformationLinkAsync(appUser , model);
     }
 
