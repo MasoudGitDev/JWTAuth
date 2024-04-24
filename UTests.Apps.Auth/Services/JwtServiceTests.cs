@@ -1,78 +1,91 @@
-﻿//using Apps.Auth.Services;
-//using FluentAssertions;
-//using Shared.Auth.Enums;
-//using Shared.Auth.Models;
-//using Shared.Auth.ValueObjects;
+﻿using Apps.Auth.Services;
+using FluentAssertions;
+using Shared.Auth.Constants;
+using Shared.Auth.Enums;
+using Shared.Auth.Models;
 
-//namespace UTests.Apps.Auth.Services;
-//public class JwtServiceTests {
+namespace UTests.Apps.Auth.Services;
+public class JwtServiceTests {
 
-//    private readonly AuthTokenSettingsModel _authSetting =
-//        new(
-//            "TNIvdpRbRIZHJU2NzG9tMnJKV3ZzZz09TNIvdpRbRIZHJU2NzG9tMnJKV3ZzZz09",
-//            "https://localhost:7224",
-//            "https://localhost:7224",
-//            60);
+    
+
+    private readonly AuthTokenSettingsModel _authSetting =
+            new(
+                "TNIvdpRbRIZHJU2NzG9tMnJKV3ZzZz09TNIvdpRbRIZHJU2NzG9tMnJKV3ZzZz09",
+                "https://localhost:7224",
+                "https://localhost:7224",
+                60);
 
 
-//    private readonly  JwtService _jwtService;
+    private readonly  JwtService _jwtService;
 
-//    public JwtServiceTests() {
-//        _jwtService = JwtService.Create(_authSetting);
-//    }
+    public JwtServiceTests() {
+        _jwtService = JwtService.Create(_authSetting);
+    }
 
-//    //[Fact]
-//    //public async Task GenerateTokenAsync_Should_GenerateToken_Successfully() {
+    [Fact]
+    public async Task GenerateToken_Should_Return_Valid_AccountResult() {
 
-//    //    //Arrange
-//    //    AppUserId appUserId = AppUserId.Create();
+        //Arrange 
+        Dictionary<string,string> claims = new(){
+            { TokenKey.DisplayName , "TestUser" } ,
+            { TokenKey.Id , Guid.NewGuid().ToString() } ,
+            { TokenKey.Issuer , _authSetting.Issuer.ToString() } ,
+            { TokenKey.IssuerAt , DateTime.UtcNow.ToString() } ,
+            { TokenKey.Audience , _authSetting.Audience } ,
+            { TokenKey.ExpireAt , DateTime.UtcNow.AddMinutes(_authSetting.ExpireMinutes).ToString() } ,
+            { TokenKey.UserId , Guid.NewGuid().ToString() } ,
+            { TokenKey.NotBefore , DateTime.UtcNow.ToString() },
+            { TokenKey.IsBlocked , false.ToString() } ,
+            { TokenKey.Reason , "OK"  }
+        };
 
-//    //    //Act
-//    //    var result =  await _jwtService.GenerateTokenAsync(appUserId);
+        //Act
+        var accountResult = await _jwtService.GenerateTokenAsync(claims);
 
-//    //    //Assert
-//    //    SharedAssert(result);
+        //Assert
+        SharedAssert(accountResult);
+        accountResult.KeyValueClaims[TokenKey.IsBlocked].Should().Be("False");
+        accountResult.KeyValueClaims[TokenKey.Reason].Should().Be("OK");
+    }
 
-//    //}
+    [Fact]
+    public async Task EvaluateToken_should_Return_Valid_AccountResult() {
+        //Arrange
+        string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTM5Mzk3NjUsImF1ZCI6WyJodHRwczovL2xvY2FsaG9zdDo3MjI0IiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NzIyNCJdLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MjI0IiwiZXhwIjoxNzEzOTQzMzY1LCJpZCI6IjNmYjE5ZmRlLTI5NGUtNGY3Zi1iMjhlLTEzZDA5YWVkMTIyMyIsIlVzZXJJZCI6ImYwNTA4ZDRjLTQzMDMtNGRkYS04NTRmLTBmMGU1NjJiMTk2MyIsIlJlYXNvbiI6Ik5vdENvbmZpcm1lZEVtYWlsIiwiSXNCbG9ja2VkIjoiVHJ1ZSIsIkRpc3BsYXlOYW1lIjoiTWFzb3VkMSIsIm5iZiI6MTcxMzkzOTc2NX0.2gAolLah0vptXcMqpE0BNDiW5Yjw-emNojkG-hj24rY";
 
-//    //[Fact]
-//    //public async Task EvaluateAsync_Should_EvaluateToken_Successfully() {
+        //Act
+        var accountResult = await _jwtService.EvaluateAsync(token , async (id) => await Task.FromResult(id));
 
-//    //    //Arrange
-//    //    string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1YWQ4MGEwLWM3ZjEtNGQ2Yy1iYzMyLWI3MzRhN2YxMGI0ZiIsIlVzZXJJZCI6IjUzY2E5N2M3LTU4MzYtNDhlMS05MDc2LWY0NTM2NTVhZjkzYiIsImlhdCI6IjMvMjcvMjAyNCA4OjI4OjE5IEFNIiwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzIyNCIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcyMjQiLCJleHAiOiIzLzI3LzIwMjQgOToyODoxOSBBTSIsIklzQmxvY2tlZCI6IkZhbHNlIn0.diljI9ZPV0mt88kSU1uLIwgVHDXl1LrkC8QE1rY-fpA";
+        //Assert
+        SharedAssert(accountResult);
+    }
 
-//    //    //Act
-//    //    var result =  await _jwtService.EvaluateAsync(token);
+    private void SharedAssert(AccountResult result) {
+    result.Should().NotBeNull();
+    result.ResultStatus.Should().Be(ResultStatus.Succeed);
+    result.AuthToken.Should().NotBeNullOrEmpty();
+    result.KeyValueClaims.Should().NotBeNull().And.NotBeEmpty();
 
-//    //    //Assert
-//    //    SharedAssert(result);
+    var claims = result.KeyValueClaims;
 
-//    //}
+    claims.Should().BeOfType<Dictionary<string , string>>();
+    claims.Keys.Should().ContainMatch(
+        TokenKey.Id ,
+        TokenKey.Issuer ,
+        TokenKey.IssuerAt ,
+        TokenKey.Audience ,
+        TokenKey.ExpireAt ,
+        TokenKey.UserId ,
+        TokenKey.IsBlocked , 
+        TokenKey.Reason ,
+        TokenKey.DisplayName ,
+        TokenKey.NotBefore).And.HaveCount(10);
+    
+    claims.Where(x => x.Key == TokenKey.Issuer).FirstOrDefault().Value
+        .Should().Be(_authSetting.Issuer);
+    claims.Where(x => x.Key == TokenKey.Audience).FirstOrDefault().Value
+        .Should().Be(_authSetting.Audience);
+}
 
-//    //// private methods
-
-//    private void SharedAssert(AccountResult result) {
-//        result.Should().NotBeNull();
-//        result.ResultStatus.Should().Be(ResultStatus.Succeed);
-//        result.AuthToken.Should().NotBeNullOrEmpty();
-//        result.KeyValueClaims.Should().NotBeNull().And.NotBeEmpty();
-
-//        var claims = result.KeyValueClaims;
-
-//        claims.Should().BeOfType<Dictionary<string , string>>();
-//        claims.Keys.Should().ContainMatch(
-//            AuthTokenType.Id ,
-//            AuthTokenType.Issuer ,
-//            AuthTokenType.IssuerAt ,
-//            AuthTokenType.Audience ,
-//            AuthTokenType.ExpireAt ,
-//            AuthTokenType.UserId ,
-//            AuthTokenType.IsBlocked);
-
-//        claims.Where(x => x.Key == AuthTokenType.Issuer).FirstOrDefault().Value
-//            .Should().Be(_authSetting.Issuer);
-//        claims.Where(x => x.Key == AuthTokenType.Audience).FirstOrDefault().Value
-//            .Should().Be(_authSetting.Audience);
-//    }
-
-//}
+}
