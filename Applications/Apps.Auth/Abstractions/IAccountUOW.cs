@@ -1,4 +1,4 @@
-﻿using Apps.Auth.Accounts.Manager;
+﻿using Apps.Auth.Abstractions.Managers;
 using Apps.Services.Services;
 using Domains.Auth.AppUserEntity.Repos;
 using Shared.Auth.Abstractions;

@@ -1,5 +1,5 @@
 ﻿using Apps.Auth.Abstractions;
-using Apps.Auth.Accounts.Manager;
+using Apps.Auth.Abstractions.Managers;
 using Apps.Auth.Services;
 using Apps.Services.Services;
 using Domains.Auth.AppUserEntity.Aggregate;

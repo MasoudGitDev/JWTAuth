@@ -1,5 +1,5 @@
 ﻿using Apps.Auth.Abstractions;
-using Apps.Auth.Accounts.Manager;
+using Apps.Auth.Abstractions.Managers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Auth.DTOs;
