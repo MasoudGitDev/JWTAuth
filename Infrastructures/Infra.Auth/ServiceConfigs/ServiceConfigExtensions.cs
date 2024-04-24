@@ -10,7 +10,6 @@ using Infra.Auth.Contexts;
 using Infra.Auth.Contexts.Write;
 using Infra.Auth.Implements.Accounts;
 using Infra.Auth.Implements.Managers;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -94,7 +93,7 @@ public static class ServiceConfigExtensions {
                     var user = (await signInManager.UserManager.FindByIdAsync(userId))
                         .ThrowIfNull("Invalid User");
 
-                    ctx.Principal = await signInManager.CreateUserPrincipalAsync(user);               
+                    ctx.Principal = await signInManager.CreateUserPrincipalAsync(user);
                 } ,
                 OnAuthenticationFailed = async (ctx) => {
                     Console.WriteLine(ctx.Exception.Message);
@@ -107,7 +106,7 @@ public static class ServiceConfigExtensions {
             };
         });
 
-        
+
 
 
         return services;
