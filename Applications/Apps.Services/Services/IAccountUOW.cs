@@ -1,9 +1,8 @@
-﻿using Apps.Auth.Abstractions.Managers;
-using Apps.Services.Services;
+﻿using Apps.Services.Services.AccountManagers;
 using Domains.Auth.AppUserEntity.Repos;
 using Shared.Auth.Abstractions;
 
-namespace Apps.Auth.Abstractions;
+namespace Apps.Services.Services;
 public interface IAccountUOW {
 
     IAppUserQueries Queries { get; }

@@ -1,11 +1,9 @@
-﻿using Apps.Services.Abstractions;
-using Apps.Services.Enums;
+﻿using Apps.Services.Enums;
 using Apps.Services.Models;
-using Apps.Services.MsgSenders.Models;
 using Apps.Services.Services;
 using Shared.Auth.Extensions;
 
-namespace Apps.Services.MsgSenders.Email;
+namespace Apps.Services.Implementations.MsgSenders.Emails;
 
 internal class FakeEmailSender(EmailConfigModel _config) : IMessageSender {
     public SenderType SenderType => SenderType.Email;

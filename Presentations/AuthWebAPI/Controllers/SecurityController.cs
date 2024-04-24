@@ -1,4 +1,4 @@
-﻿using Apps.Auth.Abstractions;
+﻿using Apps.Services.Services;
 using Domains.Auth.AppUserEntity.Aggregate;
 using Domains.Auth.AppUserEntity.Repos;
 using FluentValidation;

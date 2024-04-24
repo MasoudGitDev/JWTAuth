@@ -1,4 +1,4 @@
-﻿using Apps.Services.MsgSenders.Models;
+﻿using Apps.Services.Models;
 using MimeKit;
 
 namespace Apps.Services.Extensions;

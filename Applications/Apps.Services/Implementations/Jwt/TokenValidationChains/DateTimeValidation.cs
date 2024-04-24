@@ -2,7 +2,7 @@
 using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
 
-namespace Apps.Auth.Services.TokenValidationChains;
+namespace Apps.Services.Implementations.Jwt.TokenValidationChains;
 internal class DateTimeValidation(double _expireMinute = 60) : TokenValidationChain {
     public override void Apply(Dictionary<string , string> claims) {
         base.Apply(claims);

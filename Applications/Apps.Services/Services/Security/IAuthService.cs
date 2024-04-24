@@ -1,7 +1,7 @@
 ﻿using Shared.Auth.Models;
 using Shared.Auth.ValueObjects;
 
-namespace Apps.Auth.Abstractions;
+namespace Apps.Services.Services.Security;
 public interface IAuthTokenService {
     Task<AccountResult> GenerateAsync(
         Dictionary<string , string> claims ,

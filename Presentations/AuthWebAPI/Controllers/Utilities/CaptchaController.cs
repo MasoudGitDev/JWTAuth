@@ -1,4 +1,4 @@
-﻿using Apps.Services.Services;
+﻿using Apps.Services.Services.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Shared.Auth.Constants.ApiAddresses;

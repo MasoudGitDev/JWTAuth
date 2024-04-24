@@ -2,12 +2,12 @@
 using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
 
-namespace Apps.Auth.Services.TokenValidationChains;
+namespace Apps.Services.Implementations.Jwt.TokenValidationChains;
 
 internal class IsBlockedValidation : TokenValidationChain {
     public override void Apply(Dictionary<string , string> claims) {
         base.Apply(claims);
-        string isBlocked = (claims[TokenKey.IsBlocked])
+        string isBlocked = claims[TokenKey.IsBlocked]
             .ThrowIfNullOrWhiteSpace("IsBlocked");
         if(isBlocked.Equals("true" , StringComparison.CurrentCultureIgnoreCase)) {
             throw new InvalidTokenException("The Token has been <Blocked>.");

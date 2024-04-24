@@ -1,7 +1,6 @@
-﻿using Apps.Auth.Abstractions;
-using Apps.Auth.Abstractions.Managers;
-using Apps.Auth.Services;
-using Apps.Services.Services;
+﻿using Apps.Services.Services;
+using Apps.Services.Services.AccountManagers;
+using Apps.Services.Services.Security;
 using Domains.Auth.AppUserEntity.Aggregate;
 using Microsoft.AspNetCore.Identity;
 using Shared.Auth.Exceptions;

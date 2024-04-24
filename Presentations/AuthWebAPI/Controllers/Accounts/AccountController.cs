@@ -1,5 +1,5 @@
-﻿using Apps.Auth.Abstractions;
-using Apps.Auth.Abstractions.Managers;
+﻿using Apps.Services.Services;
+using Apps.Services.Services.AccountManagers;
 using Domains.Auth.AppUserEntity.Aggregate;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;

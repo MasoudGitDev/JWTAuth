@@ -1,7 +1,8 @@
-﻿using Apps.Auth.Abstractions;
-using Apps.Auth.Abstractions.Managers;
-using Apps.Auth.Services;
+﻿using Apps.Services.Implementations.Jwt;
 using Apps.Services.ServiceRegistrations;
+using Apps.Services.Services;
+using Apps.Services.Services.AccountManagers;
+using Apps.Services.Services.Security;
 using Domains.Auth.AppRoleEntity;
 using Domains.Auth.AppUserEntity.Aggregate;
 using Domains.Auth.AppUserEntity.Repos;

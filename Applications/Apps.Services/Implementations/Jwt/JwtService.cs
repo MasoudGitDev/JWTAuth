@@ -1,4 +1,4 @@
-﻿using Apps.Auth.Abstractions;
+﻿using Apps.Services.Services.Security;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Auth.Constants;
 using Shared.Auth.Exceptions;
@@ -9,7 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Apps.Auth.Services;
+namespace Apps.Services.Implementations.Jwt;
 
 internal class JwtService(AuthTokenSettingsModel _tokenSettings) : IAuthTokenService {
 

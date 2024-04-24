@@ -1,6 +1,6 @@
 ﻿using Shared.Auth.Exceptions;
 
-namespace Apps.Auth.Services.TokenValidationChains;
+namespace Apps.Services.Implementations.Jwt.TokenValidationChains;
 
 internal class ItemCountsValidation(byte _count) : TokenValidationChain {
     public override void Apply(Dictionary<string , string> claims) {

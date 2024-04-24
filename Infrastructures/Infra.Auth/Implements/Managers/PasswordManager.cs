@@ -1,7 +1,6 @@
-﻿using Apps.Auth.Abstractions;
-using Apps.Auth.Abstractions.Managers;
-using Apps.Auth.Services;
-using Apps.Services.Services;
+﻿using Apps.Services.Services;
+using Apps.Services.Services.AccountManagers;
+using Apps.Services.Services.Security;
 using Domains.Auth.AppUserEntity.Aggregate;
 using Domains.Auth.AppUserEntity.ValueObjects;
 using Infra.Auth.Contexts.Write;

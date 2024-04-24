@@ -2,12 +2,12 @@
 using Shared.Auth.Exceptions;
 using Shared.Auth.Extensions;
 
-namespace Apps.Auth.Services.TokenValidationChains;
+namespace Apps.Services.Implementations.Jwt.TokenValidationChains;
 
 internal class IssuerValidation(string _issuer) : TokenValidationChain {
     public override void Apply(Dictionary<string , string> claims) {
         base.Apply(claims);
-        string issuer = (claims[TokenKey.Issuer])
+        string issuer = claims[TokenKey.Issuer]
             .ThrowIfNullOrWhiteSpace("Issuer");
         if(issuer != _issuer) {
             throw new InvalidTokenException("The <Issuer> of the token is invalid.");

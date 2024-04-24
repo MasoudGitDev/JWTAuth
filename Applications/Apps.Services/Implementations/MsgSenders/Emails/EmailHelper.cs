@@ -3,7 +3,7 @@ using Apps.Services.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
 
-namespace Apps.Services.MsgSenders.Email;
+namespace Apps.Services.Implementations.MsgSenders.Emails;
 internal class EmailHelper(EmailConfigModel _config) {
     public async Task SetupAsync(MimeMessage message , bool useSSL = true) {
         using SmtpClient smtpClient = new();
@@ -12,7 +12,7 @@ internal class EmailHelper(EmailConfigModel _config) {
             await smtpClient.AuthenticateAsync(_config.userName , _config.appPassword , cancellation);
             smtpClient.AuthenticationMechanisms.Remove("XOAUTH2");
             await smtpClient.ConnectAsync(_config.From , (int) _config.Port , useSSL , cancellation);
-            
+
             if(!smtpClient.IsConnected) {
                 throw new SmtpException("The <SMTP> is not connected.");
             }

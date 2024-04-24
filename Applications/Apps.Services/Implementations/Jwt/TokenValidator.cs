@@ -1,6 +1,6 @@
-﻿using Apps.Auth.Services.TokenValidationChains;
+﻿using Apps.Services.Implementations.Jwt.TokenValidationChains;
 
-namespace Apps.Auth.Services;
+namespace Apps.Services.Implementations.Jwt;
 
 internal class TokenValidator() {
 
