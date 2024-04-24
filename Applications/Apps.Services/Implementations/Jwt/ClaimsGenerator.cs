@@ -13,7 +13,7 @@ public sealed class ClaimsGenerator(AuthTokenSettingsModel tokenSettings) : ICla
     {
         var claims = Shared(appUserId, displayName);
         claims.Add(TokenKey.IsBlocked, false.ToString());
-        claims.Add(TokenKey.Reason, "Ok");
+        claims.Add(TokenKey.Reason, "OK");
         return claims;
     }
     public Dictionary<string, string> CreateBlockClaims(AppUserId appUserId, string reason, string displayName = "")
