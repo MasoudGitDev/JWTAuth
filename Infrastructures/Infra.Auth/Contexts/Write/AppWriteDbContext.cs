@@ -2,6 +2,7 @@
 using Domains.Auth.AppUserEntity.Aggregate;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Infra.Auth.Contexts.Write;
 internal class AppWriteDbContext : IdentityDbContext<AppUser , AppRole , Guid> {
